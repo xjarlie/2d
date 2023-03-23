@@ -7,8 +7,18 @@ class Vector {
         this.y = y;
     }
 
+    set magnitude(m: number) {
+        this.x = m * Math.cos(this.direction);
+        this.y = m * Math.sin(this.direction);
+    }
+
     get magnitude() {
         return Math.sqrt((this.x^2) + (this.y^2));
+    }
+
+    set direction(d: number) {
+        this.x = this.magnitude * Math.cos(d);
+        this.y = this.magnitude * Math.sin(d);
     }
 
     get direction(): number {
