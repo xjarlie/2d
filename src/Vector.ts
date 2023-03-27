@@ -13,7 +13,7 @@ class Vector {
     }
 
     get magnitude() {
-        return Math.sqrt((this.x^2) + (this.y^2));
+        return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2));
     }
 
     set direction(d: number) {
@@ -22,56 +22,89 @@ class Vector {
     }
 
     get direction(): number {
-        return Math.atan((this.y / this.x))
-    }
-
-    add(...props: Vector[]) {
-
-        for (const i in props) {
-
-            this.x += props[i].x;
-
-            this.y += props[i].y;
-        }
-
-    }
-
-    subtract(...props: Vector[]) {
-
-        for (const o of props) {
-            this.add(o.negative());
-        }
-
-    }
-
-    multiply(value: Vector | number) {
-
-        if (typeof value === 'number') {
-            
-            this.x *= value;
-            this.y*= value;
-
-        } else {
-
-            this.x *= value.x;
-            this.y *= value.y;
-
-        }
-
+        return Math.atan2(this.y, this.x);
     }
 
     negative(): Vector {
-        return this.multipliedBy(-1);
-    }
-
-    multipliedBy(value: number): Vector {
-        return new Vector(this.x * value, this.y * value);
+        return Vector.multiply(this, -1);
     }
 
     static fromPolar(magnitude: number, angle: number): Vector {
-        const x = magnitude * Math.cos(angle);
-        const y = magnitude * Math.sin(angle);
+        const x = Math.round(magnitude * Math.cos(angle));
+        const y = (magnitude * Math.sin(angle));
         return new Vector(x, y);
+    }
+
+    static normalise(target: Vector): Vector {
+        return Vector.divide(target, target.magnitude);
+    }
+
+    static dot(a: Vector, b: Vector): number {
+        return a.x * b.x + a.y * b.y;
+    }
+
+    static round(v: Vector): Vector {
+        return new Vector(Math.round(v.x), Math.round(v.y));
+    }
+
+    static multiply(target: Vector, ...vectors: (Vector | number)[]): Vector {
+
+        const result = new Vector(target.x, target.y);
+
+        for (const o of vectors) {
+            if (typeof o === 'number') {
+                result.x = result.x * o;
+                result.y = result.y * o;
+            } else {
+                result.x = result.x * o.x;
+                result.y = result.y * o.y;
+            }
+        }
+
+        return result;
+
+    }
+
+    static divide(target: Vector, ...vectors: (Vector | number)[]): Vector {
+        
+        const result = new Vector(target.x, target.y);
+
+        for (const o of vectors) {
+            if (typeof o === 'number') {
+                result.x = result.x / o;
+                result.y = result.y / o;
+            } else {
+                result.x = result.x / o.x;
+                result.y = result.y / o.y;
+            }
+        }
+
+        return result;
+    }
+
+    static sum(...vectors: Vector[]): Vector {
+
+        const result = new Vector();
+        
+        for (const o of vectors) {
+            result.x += o.x;
+            result.y += o.y;
+        }
+
+        return result;
+
+    }
+
+    static subtract(...vectors: Vector[]): Vector {
+
+        const result = new Vector();
+
+        for (const o of vectors) {
+            result.x -= o.x;
+            result.y -= o.y;
+        }
+
+        return result;
     }
 }
 

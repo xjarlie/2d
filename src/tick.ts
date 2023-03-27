@@ -1,5 +1,5 @@
 import Entity from "./Entity";
-import global from "./global";
+import global from "./lib/global";
 import { milliseconds } from "./lib/types";
 
 let ticks: number = 0;
@@ -10,17 +10,20 @@ global.tps = 0;
 function tick(timestamp: DOMHighResTimeStamp) {
 
     const deltaTime: milliseconds = timestamp - lastTimestamp;
-    global.tps = 1 / (deltaTime / 1000)
+    global.tps = 1 / (deltaTime / 1000);
+
+    //console.info('TPS: ', global.tps);
     
 
     global.ctx.clearRect(0, 0, global.ctx.canvas.width, global.ctx.canvas.height);
 
 
-    const entities: Entity[] = global.entities;
+    const entities: Entity[] = [...global.entities];
+    //console.log('TICK RUNNING', ticks);
 
-    for (const i in entities) {
-        entities[i].tick(deltaTime);
-        entities[i].draw();
+    for (const o of entities) {
+        o.tick(deltaTime);
+        o.draw();
     }
 
     lastTimestamp = timestamp;

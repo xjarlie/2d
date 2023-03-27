@@ -1,6 +1,7 @@
 import { Vector } from "./Vector";
-import global from "./global";
-import { milliseconds, seconds } from "./lib/types";
+import global from "./lib/global";
+import { milliseconds } from "./lib/types";
+import { ticks } from "./tick";
 
 class Entity {
 
@@ -8,9 +9,11 @@ class Entity {
     size: Vector;
     velocity: Vector;
     force: Vector;
+    acceleration: Vector;
     gravity: boolean;
     density: number;
     color: string;
+    drag: number;
 
 
     id: string;
@@ -20,19 +23,21 @@ class Entity {
         this.position = new Vector(posX, posY);
         this.size = new Vector(sizeX, sizeY);
         this.velocity = new Vector();
-        this.force = new Vector();
+        this.acceleration = new Vector();
         this.density = 1;
         this.color = '#fff';
         this.gravity = true;
+        this.drag = 0.1;
+        this.force = new Vector();
         
 
         this.id = crypto.randomUUID();
 
     }
 
-    get acceleration(): Vector {
-        return new Vector(this.force.x / this.mass, this.force.y / this.mass);
-    }
+    // get acceleration(): Vector {
+    //     return new Vector(this.force.x / this.mass, this.force.y / this.mass);
+    // }
 
     get area(): number {
         return this.size.x * this.size.y;
@@ -40,6 +45,11 @@ class Entity {
 
     get mass(): number {
         return this.area * this.density;
+    }
+
+    applyForce(f: Vector) {
+        // this.acceleration = Vector.sum(this.acceleration, Vector.divide(f, this.mass));
+        this.force = Vector.sum(this.force, f);
     }
 
     draw() {
@@ -53,12 +63,31 @@ class Entity {
 
     tick(deltaTime: milliseconds) {
 
+        //console.log(this.acceleration);
+
         // apply gravity
-        if (this.gravity) this.force.y += global.gravity;
+        if (this.gravity) this.acceleration.y += global.gravity;
+
+        const deltaTimeS = deltaTime / 1000;
+
+        // apply air resistance
+        const airRes = new Vector(0,0);
+        airRes.x = -0.5 * global.airConstant * (this.size.y/1) * Math.pow(this.velocity.x, 2) * Math.sign(this.velocity.x);
+        airRes.y = -0.5 * global.airConstant * (this.size.x/1) * Math.pow(this.velocity.y, 2) * Math.sign(this.velocity.y);
+        
+        this.force = Vector.sum(this.force, airRes);
+
+        // apply acceleration a = f/m
+        this.acceleration = Vector.sum(this.acceleration, Vector.divide(this.force, this.mass));
+        // this.acceleration.x += 1;
+        // this.acceleration.y += 1;
+
+        // apply velocity & position
+        // v = u + at
+        this.velocity = Vector.sum(this.velocity, Vector.multiply(this.acceleration, deltaTimeS));
 
 
-        this.velocity.add(this.acceleration.multipliedBy(deltaTime));
-        this.position.add(this.velocity, this.acceleration.multipliedBy(0.5));
+        this.position = Vector.sum(this.position, Vector.multiply(this.velocity, deltaTimeS));
 
         const entities: Entity[] = global.entities;
         const collisions = this.collidingMultiple(...entities);
@@ -67,13 +96,14 @@ class Entity {
         } else {
             this.color = 'white';
         }
-        console.log(collisions);
 
         // for (const o of collisions) {
         //     this.force.subtract(o.force);
         //     o.force.add(this.force);
         // }
-        
+
+        this.force = new Vector();
+        this.acceleration = new Vector();
     }
 
     add() {
