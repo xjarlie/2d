@@ -141,6 +141,10 @@ class Entity {
 
         return colliding;
     }
+
+    static collides(a: Entity, b: Entity) {
+        
+    }
 }
 
 export default Entity;

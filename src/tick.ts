@@ -22,7 +22,7 @@ function tick(timestamp: DOMHighResTimeStamp) {
     //console.log('TICK RUNNING', ticks);
 
     for (const o of entities) {
-        o.tick(deltaTime);
+        if (ticks > 5) o.tick(deltaTime);
         o.draw();
     }
 

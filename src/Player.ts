@@ -11,7 +11,7 @@ class Player extends Entity {
     constructor(posX: number, posY: number) {
         super(posX, posY, 50, 50);
 
-        this.movementForce = 2500000;
+        this.movementForce = 2_500_000;
         this.density = 1;
     }
 
@@ -34,7 +34,7 @@ class Player extends Entity {
             this.applyForce(Vector.fromPolar(this.movementForce, Math.PI * 1.5));
         }
 
-        console.log(this.velocity.x);
+        console.log(this.velocity);
 
     }
 }

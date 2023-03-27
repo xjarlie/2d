@@ -12,7 +12,7 @@ function main() {
 
 
     global.ctx = ctx;
-    global.gravity = 9.81;
+    global.gravity = 9.81 * 200;
     // global.scale = 0.1;
     global.airConstant = 1;
 
