@@ -50,7 +50,7 @@ class Entity {
 
     }
 
-    tick() {
+    tick(deltaTime: number) {
 
         // apply gravity
         if (this.gravity) this.force.y += global.gravity;
