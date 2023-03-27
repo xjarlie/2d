@@ -1,5 +1,6 @@
 import { Vector } from "./Vector";
 import global from "./global";
+import { milliseconds, seconds } from "./lib/types";
 
 class Entity {
 
@@ -50,13 +51,13 @@ class Entity {
 
     }
 
-    tick(deltaTime: number) {
+    tick(deltaTime: milliseconds) {
 
         // apply gravity
         if (this.gravity) this.force.y += global.gravity;
 
 
-        this.velocity.add(this.acceleration);
+        this.velocity.add(this.acceleration.multipliedBy(deltaTime));
         this.position.add(this.velocity, this.acceleration.multipliedBy(0.5));
 
         const entities: Entity[] = global.entities;

@@ -1,5 +1,6 @@
 import Entity from "./Entity";
 import global from "./global";
+import { milliseconds } from "./lib/types";
 
 let ticks: number = 0;
 
@@ -8,7 +9,7 @@ global.tps = 0;
 
 function tick(timestamp: DOMHighResTimeStamp) {
 
-    const deltaTime: number = timestamp - lastTimestamp;
+    const deltaTime: milliseconds = timestamp - lastTimestamp;
     global.tps = 1 / (deltaTime / 1000)
     
 
