@@ -7,6 +7,8 @@ class Ground extends Entity {
 
         this.gravity = false;
         this.group = EntityGroup.Ground;
+        this.static = true;
+        //this.density = 100000;
     }
 }
 

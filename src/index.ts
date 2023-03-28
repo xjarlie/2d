@@ -16,14 +16,22 @@ function main() {
     global.ctx = ctx;
     global.gravity = 9.81 * 200;
     // global.scale = 0.1;
-    global.airConstant = 1;
+    global.airConstant = 0.5;
 
     const player = new Player(200, 200);
-    player.gravity = false;
+    player.gravity = true;
     player.add();
 
-    const ground = new Ground(300, 400, 300, 25);
+    const box = new Entity(300, 200, 50, 50);
+    box.group = EntityGroup.Box;
+    box.add();
+
+    const ground = new Ground(150, 400, 500, 25);
     ground.add();
+
+    
+
+    
 
     requestAnimationFrame(tick);
 
@@ -32,10 +40,10 @@ function main() {
 
     // vector testing
 
-    const a = new Vector(0.1, 1);
-    const b = new Vector(2, 0.2);
+    const a = new Vector(-10, -10);
+    const b = new Vector(0, 0);
 
-    console.warn(Vector.divide(a, b, 10))
+    console.warn(Vector.subtract(a, b))
 
 }
 

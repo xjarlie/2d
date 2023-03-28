@@ -47,6 +47,12 @@ class Vector {
         return new Vector(Math.round(v.x), Math.round(v.y));
     }
 
+    static sign(v: Vector): Vector {
+        const x = Math.sign(v.x);
+        const y = Math.sign(v.y);
+        return new Vector(x, y);
+    }
+
     static multiply(target: Vector, ...vectors: (Vector | number)[]): Vector {
 
         const result = new Vector(target.x, target.y);
@@ -84,9 +90,11 @@ class Vector {
 
     static sum(...vectors: Vector[]): Vector {
 
-        const result = new Vector();
+        const result = new Vector(vectors[0].x, vectors[0].y);
         
-        for (const o of vectors) {
+        for (const i in vectors) {
+            if (Number(i) === 0) continue;
+            const o = vectors[i];
             result.x += o.x;
             result.y += o.y;
         }
@@ -97,9 +105,11 @@ class Vector {
 
     static subtract(...vectors: Vector[]): Vector {
 
-        const result = new Vector();
+        const result = new Vector(vectors[0].x, vectors[0].y);
 
-        for (const o of vectors) {
+        for (const i in vectors) {
+            if (Number(i) === 0) continue;
+            const o = vectors[i];
             result.x -= o.x;
             result.y -= o.y;
         }

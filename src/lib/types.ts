@@ -4,5 +4,13 @@ export type milliseconds = number
 export enum EntityGroup {
     Default,
     Ground,
-    Player
+    Player,
+    Box
+}
+
+export enum CollisionType {
+    Top,
+    Right,
+    Bottom,
+    Left
 }
