@@ -1,6 +1,6 @@
 import { Vector } from "./Vector";
 import global from "./lib/global";
-import { milliseconds } from "./lib/types";
+import { EntityGroup, milliseconds } from "./lib/types";
 import { ticks } from "./tick";
 
 class Entity {
@@ -17,6 +17,7 @@ class Entity {
 
 
     id: string;
+    group: EntityGroup;
 
     constructor(posX: number = 0, posY: number = 0, sizeX: number = 50, sizeY: number = 50) {
         
