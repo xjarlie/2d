@@ -17,6 +17,8 @@ class Entity {
     color: string;
     drag: number;
 
+    halfSize: Vector;
+    center: Vector;
 
     id: number;
     group: EntityGroup;
@@ -38,10 +40,6 @@ class Entity {
 
     }
 
-    // get acceleration(): Vector {
-    //     return new Vector(this.force.x / this.mass, this.force.y / this.mass);
-    // }
-
     get area(): number {
         return this.size.x * this.size.y;
     }
@@ -55,12 +53,12 @@ class Entity {
         this.force = Vector.sum(this.force, f);
     }
 
-    draw() {
+    draw(position = this.position) {
 
         const ctx = global.ctx as CanvasRenderingContext2D;
 
         ctx.fillStyle = this.color;
-        ctx.fillRect(this.position.x, this.position.y, this.size.x, this.size.y);
+        ctx.fillRect(position.x, position.y, this.size.x, this.size.y);
 
     }
 
@@ -155,8 +153,10 @@ class Entity {
         );
     }
 
-    static getCollisionBetween(a: Entity, b: Entity): Collision {
-        if (!Entity.areColliding(a, b)) {}
+    static getCollisionBetween(a: Entity, b: Entity): Collision | null {
+        if (!Entity.areColliding(a, b)) return null;
+
+        const collision = new Collision(a, b, 0, 0);
     }
 }
 

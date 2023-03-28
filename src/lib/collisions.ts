@@ -18,7 +18,14 @@ function handleCollisions() {
         for (const p of entities) {
             if (p === o) continue;
 
+            // first, check that they are nearby each other for performance
             
+
+            // then, specific collision
+            const collision = Entity.getCollisionBetween(o, p);
+            if (collision !== null) {
+                collisions.push(collision);
+            }
         }
     }
 }
@@ -39,4 +46,4 @@ class Collision {
     }
 }
 
-export { Collision, getCollisions }
+export { Collision, getCollisions, handleCollisions }
