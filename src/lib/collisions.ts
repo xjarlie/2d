@@ -8,6 +8,8 @@ function handleCollisions() {
     // update collision array
     // called every tick
 
+    collisions.length = 0;
+
     const entities: Entity[] = global.entities;
 
     // loop through all entities, and check for box collisions
@@ -19,7 +21,7 @@ function handleCollisions() {
             if (p === o) continue;
 
             // first, check that they are nearby each other for performance
-            
+
 
             // then, specific collision
             const collision = Entity.getCollisionBetween(o, p);
@@ -28,6 +30,7 @@ function handleCollisions() {
             }
         }
     }
+
 }
 
 function getCollisions(target: Entity): Collision[] {
@@ -39,7 +42,7 @@ class Collision {
     bodyA: Entity;
     bodyB: Entity;
 
-    constructor(a: Entity, b: Entity, x: number, y: number) {
+    constructor(a: Entity, b: Entity, x: number = 0, y: number = 0) {
         this.bodyA = a;
         this.bodyB = b;
         this.vector = new Vector(x, y);

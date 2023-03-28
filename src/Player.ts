@@ -36,7 +36,6 @@ class Player extends Entity {
         if (keyPressed("w")) {
             this.applyForce(Vector.fromPolar(this.movementForce, Math.PI * 1.5));
         }
-        console.log(ticks, global.entities);
     }
 }
 

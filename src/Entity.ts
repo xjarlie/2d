@@ -2,8 +2,8 @@ import { Vector } from "./Vector";
 import global from "./lib/global";
 import { EntityGroup, milliseconds } from "./lib/types";
 import { ticks } from "./tick";
-import { nextID } from "./lib/getEntities";
-import { Collision } from "./lib/collisions";
+import { getByGroup, nextID } from "./lib/getEntities";
+import { Collision, getCollisions } from "./lib/collisions";
 
 class Entity {
 
@@ -90,18 +90,27 @@ class Entity {
 
         this.position = Vector.sum(this.position, Vector.multiply(this.velocity, deltaTimeS));
 
-        const entities: Entity[] = global.entities;
-        const collisions = this.collidingMultiple(...entities);
-        if (collisions.length > 0) {
-            this.color = 'red';
-        } else {
-            this.color = 'white';
-        }
+        // const entities: Entity[] = global.entities;
+        // const collisions = this.collidingMultiple(...entities);
+        // if (collisions.length > 0) {
+        //     this.color = 'red';
+        // } else {
+        //     this.color = 'white';
+        // }
 
         // for (const o of collisions) {
         //     this.force.subtract(o.force);
         //     o.force.add(this.force);
         // }
+
+        const collisions = getCollisions(this);
+
+        if (collisions.length > 0) {
+            this.color = 'red';
+            console.log(collisions);
+        } else {
+            this.color = 'white';
+        }
 
         this.force = new Vector();
         this.acceleration = new Vector();
@@ -144,19 +153,33 @@ class Entity {
         return colliding;
     }
 
-    static areColliding(a: Entity, b: Entity): boolean {
-        return !(
-            ((a.position.y + a.size.y) < (b.position.y)) ||
-            (a.position.y > (b.position.y + b.size.y)) ||
-            ((a.position.x + a.size.x) < b.position.x) ||
-            (a.position.x > (b.position.x + b.size.x))
-        );
+    static areColliding(a: Entity, bs: Entity[]): boolean {
+        let colliding = false;
+
+        for (const b of bs) {
+
+            if (b === a) continue;
+
+            if (!(
+                ((a.position.y + a.size.y) < (b.position.y)) ||
+                (a.position.y > (b.position.y + b.size.y)) ||
+                ((a.position.x + a.size.x) < b.position.x) ||
+                (a.position.x > (b.position.x + b.size.x))
+            )) {
+                colliding = true;
+                break;
+            }
+        }
+
+        return colliding;
     }
 
     static getCollisionBetween(a: Entity, b: Entity): Collision | null {
-        if (!Entity.areColliding(a, b)) return null;
+        if (!Entity.areColliding(a, [b])) return null;
 
         const collision = new Collision(a, b, 0, 0);
+        // temporary: need to check collision depth
+        return collision;
     }
 }
 

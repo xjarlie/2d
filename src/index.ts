@@ -4,6 +4,7 @@ import { keyListener } from "./lib/keyMap";
 import { tick } from "./tick";
 import Player from "./Player";
 import { Vector } from "./Vector";
+import { EntityGroup } from "./lib/types";
 
 function main() {
 
@@ -20,8 +21,9 @@ function main() {
     player.gravity = false;
     player.add();
 
-    const ground = new Entity(100, 400, 300, 25);
+    const ground = new Entity(300, 400, 300, 25);
     ground.gravity = false;
+    ground.group = EntityGroup.Ground;
     ground.add();
 
     requestAnimationFrame(tick);

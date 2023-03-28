@@ -1,4 +1,5 @@
 import Entity from "./Entity";
+import { handleCollisions } from "./lib/collisions";
 import global from "./lib/global";
 import { milliseconds } from "./lib/types";
 
@@ -13,6 +14,8 @@ function tick(timestamp: DOMHighResTimeStamp) {
     global.tps = 1 / (deltaTime / 1000);
 
     //console.info('TPS: ', global.tps);
+
+    handleCollisions();
     
 
     global.ctx.clearRect(0, 0, global.ctx.canvas.width, global.ctx.canvas.height);
