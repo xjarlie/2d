@@ -3,7 +3,7 @@ import global from "./lib/global";
 import { EntityGroup, milliseconds } from "./lib/types";
 import { ticks } from "./tick";
 import { getByGroup, nextID } from "./lib/getEntities";
-import { Collision, getCollisions } from "./lib/collisions";
+import { Collision, getCollisions, getCollisionsBetween } from "./lib/collisions";
 
 class Entity {
 
@@ -103,8 +103,8 @@ class Entity {
         //     o.force.add(this.force);
         // }
 
-        const collisions = getCollisions(this);
-
+        const collisions = getCollisionsBetween(this, getByGroup(EntityGroup.Ground));
+        // console.log(collisions);
         if (collisions.length > 0) {
             this.color = 'red';
             console.log(collisions);

@@ -2,39 +2,58 @@ import Entity from "../Entity";
 import { Vector } from "../Vector";
 import global from "./global";
 
-const collisions: Collision[] = [];
+let collisions: Collision[] = [];
 
 function handleCollisions() {
     // update collision array
     // called every tick
 
-    collisions.length = 0;
+    collisions = [];
 
     const entities: Entity[] = global.entities;
 
     // loop through all entities, and check for box collisions
-    for (const o of entities) {
-        const current = o;
+    for (const current of entities) {
 
         // check every other entity for collisions
-        for (const p of entities) {
-            if (p === o) continue;
+        for (const other of entities) {
+            if (other === current) continue;
 
             // first, check that they are nearby each other for performance
 
 
             // then, specific collision
-            const collision = Entity.getCollisionBetween(o, p);
+            const collision = Entity.getCollisionBetween(current, other);
             if (collision !== null) {
-                collisions.push(collision);
+
+                // check if collision already exists but reversed
+                const duplicates = collisions.filter((o) => {
+                    return (o.bodyA.id === collision.bodyB.id && o.bodyB.id === collision.bodyA.id) || (o.bodyA.id === collision.bodyA.id && o.bodyB.id === collision.bodyB.id); 
+                })
+
+                if (duplicates.length === 0) {
+                    collisions.push(collision);
+                }
             }
         }
     }
-
 }
 
 function getCollisions(target: Entity): Collision[] {
     return collisions.filter((o) => o.bodyA === target || o.bodyB === target)
+}
+
+function getCollisionsBetween(target: Entity, bs: Entity[]): Collision[] {
+
+    return collisions.filter((o) => {
+        let result = false;
+        for (const b of bs) {
+            if ((o.bodyA.id === b.id && o.bodyB.id === target.id) || (o.bodyB.id === b.id && o.bodyA.id === target.id)) {
+                result = true;
+            }
+        }
+        return result;
+    });
 }
 
 class Collision {
@@ -49,4 +68,4 @@ class Collision {
     }
 }
 
-export { Collision, getCollisions, handleCollisions }
+export { Collision, getCollisions, handleCollisions, getCollisionsBetween }
