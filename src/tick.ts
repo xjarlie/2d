@@ -1,6 +1,7 @@
 import Entity from "./Entity";
 import { handleCollisions } from "./lib/collisions";
 import global from "./lib/global";
+import { keyPressed } from "./lib/keyMap";
 import { milliseconds } from "./lib/types";
 import { Vector } from "./Vector";
 
@@ -16,7 +17,22 @@ function tick(timestamp: DOMHighResTimeStamp) {
 
     //console.info('TPS: ', global.tps);
     
+    // move camera - Doesn't really work - prob need custom class
+    if (keyPressed("ArrowLeft")) {
+        global.ctx.translate(10, 0);
+    }
 
+    if (keyPressed("ArrowRight")) {
+        global.ctx.translate(-10, 0)
+    }
+
+    if (keyPressed("ArrowUp")) {
+        global.ctx.translate(0, 10);
+    }
+
+    if (keyPressed("ArrowDown")) {
+        global.ctx.translate(0, -10);
+    }
 
 
     const entities: Entity[] = [...global.entities];
