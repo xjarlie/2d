@@ -2,6 +2,8 @@ import { Vector } from "./Vector";
 import global from "./lib/global";
 import { EntityGroup, milliseconds } from "./lib/types";
 import { ticks } from "./tick";
+import { nextID } from "./lib/getEntities";
+import { Collision } from "./lib/collisions";
 
 class Entity {
 
@@ -16,7 +18,7 @@ class Entity {
     drag: number;
 
 
-    id: string;
+    id: number;
     group: EntityGroup;
 
     constructor(posX: number = 0, posY: number = 0, sizeX: number = 50, sizeY: number = 50) {
@@ -31,8 +33,8 @@ class Entity {
         this.drag = 0.1;
         this.force = new Vector();
         
-
-        this.id = crypto.randomUUID();
+        this.group = EntityGroup.Default;
+        this.id = -1;
 
     }
 
@@ -108,6 +110,7 @@ class Entity {
     }
 
     add() {
+        this.id = nextID();
         global.entities.push(this);
     }
 
@@ -143,8 +146,17 @@ class Entity {
         return colliding;
     }
 
-    static collides(a: Entity, b: Entity) {
-        
+    static areColliding(a: Entity, b: Entity): boolean {
+        return !(
+            ((a.position.y + a.size.y) < (b.position.y)) ||
+            (a.position.y > (b.position.y + b.size.y)) ||
+            ((a.position.x + a.size.x) < b.position.x) ||
+            (a.position.x > (b.position.x + b.size.x))
+        );
+    }
+
+    static getCollisionBetween(a: Entity, b: Entity): Collision {
+        if (!Entity.areColliding(a, b)) {}
     }
 }
 
