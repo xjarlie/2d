@@ -2,7 +2,7 @@ import { Vector } from "./Vector";
 import global from "./lib/global";
 import { CollisionType, EntityGroup, milliseconds } from "./lib/types";
 import { ticks } from "./tick";
-import { getByGroup, nextID } from "./lib/getPhysicsObject";
+import { getByGroup, nextID } from "./lib/getEntities";
 import { Collision, getCollisions, getCollisionsBetween } from "./lib/collisions";
 import { PhysicsObject } from "./lib/types";
 import Composite from "./Composite";
@@ -131,7 +131,7 @@ class Entity implements PhysicsObject {
     }
 
     // Only for internal use
-    isCollidingWith(bs: PhysicsObject[]) {
+    isCollidingWith(bs: Entity[]) {
         let colliding = false;
 
         const a = this;

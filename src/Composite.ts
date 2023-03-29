@@ -1,5 +1,5 @@
 import Entity from "./Entity";
-import { nextID } from "./lib/getPhysicsObject";
+import { nextID } from "./lib/getEntities";
 import { EntityGroup, PhysicsObject } from "./lib/types";
 import { Vector } from "./Vector";
 import global from "./lib/global";

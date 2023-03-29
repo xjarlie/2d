@@ -1,8 +1,8 @@
 import Entity from "../Entity";
 import { Vector } from "../Vector";
-import { getById } from "./getPhysicsObject";
+import { getById } from "./getEntities";
 import global from "./global";
-import { CollisionType, PhysicsObject } from "./types";
+import { CollisionType } from "./types";
 
 let collisions: Collision[] = [];
 
@@ -12,7 +12,7 @@ function handleCollisions() {
 
     collisions = [];
 
-    const entities: PhysicsObject[] = global.entities;
+    const entities: Entity[] = global.entities;
 
     // loop through all entities, and check for box collisions
     for (const current of entities) {
