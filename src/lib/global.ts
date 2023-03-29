@@ -1,5 +1,11 @@
-const global: any = {};
+let global: any = {};
 
 global.entities = [];
 
-export default global;
+function resetGlobal() {
+    global = {};
+    global.entities = [];
+}
+
+export default global 
+export { resetGlobal };

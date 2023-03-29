@@ -1,7 +1,7 @@
 import Entity from "./Entity";
-import global from "./lib/global";
+import global, { resetGlobal } from "./lib/global";
 import { keyListener } from "./lib/keyMap";
-import { tick } from "./tick";
+import { pause, setTicks, tick, ticks, unpause } from "./tick";
 import Player from "./Player";
 import { Vector } from "./Vector";
 import { EntityGroup } from "./lib/types";
@@ -53,4 +53,19 @@ function main() {
 
 }
 
+function reset() {
+    pause();
+
+    global.entities = [];
+    global.ctx.clearRect(0, 0, global.ctx.canvas.width, global.ctx.canvas.height);
+    setTicks(0);
+    resetGlobal();
+
+    main();
+    unpause();
+}
+
+
 window.onload = main;
+
+export { reset };

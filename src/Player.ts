@@ -45,7 +45,7 @@ class Player extends Entity {
         }
 
         super.tick(deltaTime);
-        console.log(this.acceleration.y, Math.round(this.velocity.y));
+        // console.log(this.acceleration.y, Math.round(this.velocity.y));
     }
 }
 

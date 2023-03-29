@@ -1,3 +1,4 @@
+import { reset } from ".";
 import Camera from "./Camera";
 import Entity from "./Entity";
 import { handleCollisions } from "./lib/collisions";
@@ -7,11 +8,16 @@ import { milliseconds } from "./lib/types";
 import { Vector } from "./Vector";
 
 let ticks: number = 0;
+let paused: boolean = false;
 
 let lastTimestamp: number = 0;
 global.tps = 0;
 
+let lastReset: number = Date.now();
+
 function tick(timestamp: DOMHighResTimeStamp) {
+
+    if (paused) return;
 
     const deltaTime: milliseconds = timestamp - lastTimestamp;
     global.tps = 1 / (deltaTime / 1000);
@@ -35,6 +41,13 @@ function tick(timestamp: DOMHighResTimeStamp) {
 
     if (keyPressed("ArrowDown")) {
         camera.translate(0, 10);
+    }
+
+    if (keyPressed("f")) {
+        if (Date.now() > lastReset + 1000) {
+            lastReset = Date.now();
+            reset();
+        }
     }
 
 
@@ -65,4 +78,16 @@ function tick(timestamp: DOMHighResTimeStamp) {
 
 }
 
-export { ticks, tick };
+function pause() {
+    paused = true;
+}
+
+function unpause() {
+    paused = false;
+}
+
+function setTicks(newTicks: number) {
+    ticks = newTicks;
+}
+
+export { ticks, tick, setTicks, pause, unpause };
