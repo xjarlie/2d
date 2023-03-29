@@ -1,3 +1,4 @@
+import Camera from "./Camera";
 import Entity from "./Entity";
 import { handleCollisions } from "./lib/collisions";
 import global from "./lib/global";
@@ -15,23 +16,25 @@ function tick(timestamp: DOMHighResTimeStamp) {
     const deltaTime: milliseconds = timestamp - lastTimestamp;
     global.tps = 1 / (deltaTime / 1000);
 
+    const camera: Camera = global.camera;
+
     //console.info('TPS: ', global.tps);
     
     // move camera - Doesn't really work - prob need custom class
     if (keyPressed("ArrowLeft")) {
-        global.ctx.translate(10, 0);
+        camera.translate(-10, 0);
     }
 
     if (keyPressed("ArrowRight")) {
-        global.ctx.translate(-10, 0)
+        camera.translate(10, 0)
     }
 
     if (keyPressed("ArrowUp")) {
-        global.ctx.translate(0, 10);
+        camera.translate(0, -10);
     }
 
     if (keyPressed("ArrowDown")) {
-        global.ctx.translate(0, -10);
+        camera.translate(0, 10);
     }
 
 
@@ -50,7 +53,9 @@ function tick(timestamp: DOMHighResTimeStamp) {
     for (const o of entities) {
         o.force = new Vector();
         o.acceleration = new Vector();
-        o.draw();
+
+        // Get screenspace position of entity
+        camera.render(o);
     }
 
     lastTimestamp = timestamp;

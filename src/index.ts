@@ -6,6 +6,7 @@ import Player from "./Player";
 import { Vector } from "./Vector";
 import { EntityGroup } from "./lib/types";
 import Ground from "./Ground";
+import Camera from "./Camera";
 
 function main() {
 
@@ -16,7 +17,10 @@ function main() {
     global.ctx = ctx;
     global.gravity = 9.81 * 200;
     // global.scale = 0.1;
-    global.airConstant = 0.5;
+    global.airConstant = 1.5;
+
+    const camera = new Camera(ctx);
+    global.camera = camera;
 
     const player = new Player(200, 200);
     player.gravity = true;
@@ -27,11 +31,7 @@ function main() {
     box.add();
 
     const ground = new Ground(150, 400, 500, 25);
-    ground.add();
-
-    
-
-    
+    ground.add();    
 
     requestAnimationFrame(tick);
 

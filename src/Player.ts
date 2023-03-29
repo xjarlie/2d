@@ -6,6 +6,7 @@ import global from "./lib/global";
 import { ticks } from "./tick";
 import { getCollisionsBetween } from "./lib/collisions";
 import { getByGroup } from "./lib/getEntities";
+import Camera from "./Camera";
 
 class Player extends Entity {
 
@@ -23,6 +24,9 @@ class Player extends Entity {
     }
 
     tick(deltaTime: milliseconds) {
+        const camera: Camera = global.camera;
+        camera.setCenter(this.position, true, false);
+
         if (keyPressed("d")) {
             this.applyForce(Vector.fromPolar(this.movementForce, 0));
         }
@@ -35,12 +39,13 @@ class Player extends Entity {
             this.applyForce(Vector.fromPolar(this.movementForce, Math.PI * 0.5))
         }
 
-        if (keyPressed("w") && getCollisionsBetween(this, [...getByGroup(EntityGroup.Box), ...getByGroup(EntityGroup.Ground)]).length > 0) {
-            this.applyForce(Vector.fromPolar(this.jumpForce, Math.PI * 1.5));
+        if (keyPressed("w") /* && getCollisionsBetween(this, [...getByGroup(EntityGroup.Box), ...getByGroup(EntityGroup.Ground)]).length > 0 */) {
+            //this.applyForce(Vector.fromPolar(this.jumpForce, Math.PI * 1.5));
+            this.applyForce(Vector.fromPolar(this.movementForce, Math.PI * 1.5));
         }
 
         super.tick(deltaTime);
-        // console.log(this.acceleration.y, this.force.y);
+        console.log(this.acceleration.y, Math.round(this.velocity.y));
     }
 }
 

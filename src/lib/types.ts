@@ -1,3 +1,5 @@
+import { Vector } from "../Vector"
+
 export type seconds = number
 export type milliseconds = number
 
@@ -13,4 +15,9 @@ export enum CollisionType {
     Right,
     Bottom,
     Left
+}
+
+export interface Renderable {
+    position: Vector;
+    draw: Function;
 }

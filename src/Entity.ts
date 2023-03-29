@@ -4,8 +4,10 @@ import { CollisionType, EntityGroup, milliseconds } from "./lib/types";
 import { ticks } from "./tick";
 import { getByGroup, nextID } from "./lib/getEntities";
 import { Collision, getCollisions, getCollisionsBetween } from "./lib/collisions";
+import { Renderable } from "./lib/types";
+import Composite from "./Composite";
 
-class Entity {
+class Entity implements Renderable {
 
     position: Vector;
     size: Vector;
@@ -23,6 +25,8 @@ class Entity {
     id: number;
     group: EntityGroup;
 
+    parentComposite?: Composite;
+
     constructor(posX: number = 0, posY: number = 0, sizeX: number = 50, sizeY: number = 50) {
 
         this.position = new Vector(posX, posY);
@@ -36,7 +40,7 @@ class Entity {
         this.force = new Vector();
         this.maxSpeed = -1;
         this.static = false;
-        this.friction = 0;
+        this.friction = 0.9;
 
         this.group = EntityGroup.Default;
         this.id = -1;
@@ -79,8 +83,6 @@ class Entity {
         // apply gravity
         if (!this.static) {
 
-            
-
             if (this.gravity) this.applyForce(new Vector(0, global.gravity * this.mass));
 
             const deltaTimeS = deltaTime / 1000;
@@ -101,7 +103,7 @@ class Entity {
                 const prodFriction = aFriction * bFriction;
 
                 if (o.type === CollisionType.Bottom || o.type === CollisionType.Top) {
-                    friction.x -= this.force.x, 2 * prodFriction;
+                    friction.x -= this.force.x * prodFriction;
                 } else {
                     friction.y -= this.force.y * prodFriction;
                 }
