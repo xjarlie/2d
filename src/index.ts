@@ -7,6 +7,7 @@ import { Vector } from "./Vector";
 import { EntityGroup } from "./lib/types";
 import Ground from "./Ground";
 import Camera from "./Camera";
+import Composite from "./Composite";
 
 function main() {
 
@@ -29,6 +30,11 @@ function main() {
     const box = new Entity(300, 200, 50, 50);
     box.group = EntityGroup.Box;
     box.add();
+
+    const smallBoxOne = new Entity(350, 200, 30, 30);
+    const smallBoxTwo = new Entity(400, 200, 30, 30);
+    const smallBoxes = new Composite(350, 200, [smallBoxOne, smallBoxTwo]);
+    smallBoxes.add();
 
     const ground = new Ground(150, 400, 500, 25);
     ground.add();    

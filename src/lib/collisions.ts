@@ -1,8 +1,8 @@
 import Entity from "../Entity";
 import { Vector } from "../Vector";
-import { getById } from "./getEntities";
+import { getById } from "./getPhysicsObject";
 import global from "./global";
-import { CollisionType } from "./types";
+import { CollisionType, PhysicsObject } from "./types";
 
 let collisions: Collision[] = [];
 
@@ -12,7 +12,7 @@ function handleCollisions() {
 
     collisions = [];
 
-    const entities: Entity[] = global.entities;
+    const entities: PhysicsObject[] = global.entities;
 
     // loop through all entities, and check for box collisions
     for (const current of entities) {
@@ -25,7 +25,7 @@ function handleCollisions() {
 
 
             // then, specific collision
-            const collision = getCollisionBetweenRaw(current, other);
+            const collision = current.getCollisionWith(other);
             if (collision !== null) {
 
                 // check if collision already exists but reversed
@@ -161,68 +161,6 @@ function getCollisionsBetween(target: Entity, bs: Entity[]): Collision[] {
         }
         return result;
     });
-}
-
-function areCollidingRaw(a: Entity, bs: Entity[]): boolean {
-    let colliding = false;
-
-    for (const b of bs) {
-
-        if (b.id === a.id) continue;
-
-        if (!(
-            ((a.position.y + a.size.y) < (b.position.y)) ||
-            (a.position.y > (b.position.y + b.size.y)) ||
-            ((a.position.x + a.size.x) < b.position.x) ||
-            (a.position.x > (b.position.x + b.size.x))
-        )) {
-            colliding = true;
-            break;
-        }
-    }
-
-    return colliding;
-}
-
-function getCollisionBetweenRaw(a: Entity, b: Entity): Collision | null {
-    if (!areCollidingRaw(a, [b])) return null;
-
-    const collision = new Collision(a, b);
-
-    const vDiff = Vector.subtract(a.velocity, b.velocity);
-    collision.velocity = vDiff;
-
-    // Get collision depth vector
-    const pDiff = Vector.subtract(a.center, b.center);
-    const minDiff = new Vector(a.size.x / 2 + b.size.x / 2, a.size.y / 2 + b.size.y / 2);
-    const depthX = pDiff.x > 0 ? minDiff.x - pDiff.x : -minDiff.x - pDiff.x;
-    const depthY = pDiff.y > 0 ? minDiff.y - pDiff.y : -minDiff.y - pDiff.y;
-    const depth = new Vector(depthX, depthY);
-    collision.depth = depth;
-
-    if (Math.abs(depth.x) < Math.abs(depth.y)) {
-        if (depth.x > 0) {
-            // Left
-            collision.type = CollisionType.Left;
-        } else {
-            // Right
-            collision.type = CollisionType.Right;
-        }
-    } else {
-        if (depth.y > 0) {
-            // Top
-            collision.type = CollisionType.Top;
-        } else {
-            // Bottom
-            collision.type = CollisionType.Bottom;
-        }
-    }
-
-    const fDiff = Vector.subtract(a.force, b.force);
-    collision.force = fDiff;
-
-    // temporary: need to check collision depth
-    return collision;
 }
 
 class Collision {

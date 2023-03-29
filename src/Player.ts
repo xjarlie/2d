@@ -5,7 +5,7 @@ import { Vector } from "./Vector";
 import global from "./lib/global";
 import { ticks } from "./tick";
 import { getCollisionsBetween } from "./lib/collisions";
-import { getByGroup } from "./lib/getEntities";
+import { getByGroup } from "./lib/getPhysicsObject";
 import Camera from "./Camera";
 
 class Player extends Entity {

@@ -2,12 +2,12 @@ import { Vector } from "./Vector";
 import global from "./lib/global";
 import { CollisionType, EntityGroup, milliseconds } from "./lib/types";
 import { ticks } from "./tick";
-import { getByGroup, nextID } from "./lib/getEntities";
+import { getByGroup, nextID } from "./lib/getPhysicsObject";
 import { Collision, getCollisions, getCollisionsBetween } from "./lib/collisions";
-import { Renderable } from "./lib/types";
+import { PhysicsObject } from "./lib/types";
 import Composite from "./Composite";
 
-class Entity implements Renderable {
+class Entity implements PhysicsObject {
 
     position: Vector;
     size: Vector;
@@ -78,7 +78,7 @@ class Entity implements Renderable {
     tick(deltaTime: milliseconds) {
 
         //console.log(this.acceleration);
-        
+
 
         // apply gravity
         if (!this.static) {
@@ -128,6 +128,72 @@ class Entity implements Renderable {
     add() {
         this.id = nextID();
         global.entities.push(this);
+    }
+
+    // Only for internal use
+    isCollidingWith(bs: PhysicsObject[]) {
+        let colliding = false;
+
+        const a = this;
+
+        for (const b of bs) {
+
+            if (b.id === a.id) continue;
+
+            if (!(
+                ((a.position.y + a.size.y) < (b.position.y)) ||
+                (a.position.y > (b.position.y + b.size.y)) ||
+                ((a.position.x + a.size.x) < b.position.x) ||
+                (a.position.x > (b.position.x + b.size.x))
+            )) {
+                colliding = true;
+                break;
+            }
+        }
+
+        return colliding;
+    }
+
+    getCollisionWith(b: Entity) {
+        const a = this;
+        if (!this.isCollidingWith([b])) return null;
+
+        const collision = new Collision(a, b);
+
+        const vDiff = Vector.subtract(a.velocity, b.velocity);
+        collision.velocity = vDiff;
+
+        // Get collision depth vector
+        const pDiff = Vector.subtract(a.center, b.center);
+        const minDiff = new Vector(a.size.x / 2 + b.size.x / 2, a.size.y / 2 + b.size.y / 2);
+        const depthX = pDiff.x > 0 ? minDiff.x - pDiff.x : -minDiff.x - pDiff.x;
+        const depthY = pDiff.y > 0 ? minDiff.y - pDiff.y : -minDiff.y - pDiff.y;
+        const depth = new Vector(depthX, depthY);
+        collision.depth = depth;
+
+        if (Math.abs(depth.x) < Math.abs(depth.y)) {
+            if (depth.x > 0) {
+                // Left
+                collision.type = CollisionType.Left;
+            } else {
+                // Right
+                collision.type = CollisionType.Right;
+            }
+        } else {
+            if (depth.y > 0) {
+                // Top
+                collision.type = CollisionType.Top;
+            } else {
+                // Bottom
+                collision.type = CollisionType.Bottom;
+            }
+        }
+
+        const fDiff = Vector.subtract(a.force, b.force);
+        collision.force = fDiff;
+
+        // temporary: need to check collision depth
+        return collision;
     }
 }
 
