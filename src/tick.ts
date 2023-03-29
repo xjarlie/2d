@@ -1,7 +1,7 @@
 import { reset } from ".";
 import Camera from "./Camera";
 import Entity from "./Entity";
-import { handleCollisions } from "./lib/collisions";
+import { Collision, getAllCollisions, getCollisionsBetween, handleCollisions, resetCollisions, setCollisions } from "./lib/collisions";
 import global from "./lib/global";
 import { keyPressed } from "./lib/keyMap";
 import { milliseconds } from "./lib/types";
@@ -9,23 +9,32 @@ import { Vector } from "./Vector";
 
 let ticks: number = 0;
 let paused: boolean = false;
+let justUnpaused: boolean = false;
 
 let lastTimestamp: number = 0;
 global.tps = 0;
 
 let lastReset: number = Date.now();
 
+let savedCollisions: Collision[] = [];
+
 function tick(timestamp: DOMHighResTimeStamp) {
 
-    if (paused) return;
+    if (paused) {
+        requestAnimationFrame(tick);
+        return
+    }
 
-    const deltaTime: milliseconds = timestamp - lastTimestamp;
+    const deltaTime: milliseconds = justUnpaused ? 16.67 : timestamp - lastTimestamp;
+
+    justUnpaused = false;
+
     global.tps = 1 / (deltaTime / 1000);
 
     const camera: Camera = global.camera;
 
     //console.info('TPS: ', global.tps);
-    
+
     // move camera - Doesn't really work - prob need custom class
     if (keyPressed("ArrowLeft")) {
         camera.translate(-10, 0);
@@ -50,29 +59,47 @@ function tick(timestamp: DOMHighResTimeStamp) {
         }
     }
 
-
     const entities: Entity[] = [...global.entities];
-    //console.log('TICK RUNNING', ticks);
 
-    
+    const onScreen: number[] = [];
 
     for (const o of entities) {
+
+        const lowerX = camera.position.x - 0.5 * camera.ctx.canvas.width - o.size.x;
+        const upperX = camera.position.x + 2.5 * camera.ctx.canvas.width + o.size.x;
+        const lowerY = camera.position.y - 0.5 * camera.ctx.canvas.height - o.size.y;
+        const upperY = camera.position.y + 2.5 * camera.ctx.canvas.height + o.size.y;
+
+        // optimisation
+        if (!((o.position.x > lowerX && o.position.x < upperX) && (o.position.y > lowerY && o.position.y < upperY))) {
+            continue;
+        } else {
+            onScreen.push(o.id);
+        }
+
         if (ticks > 5) o.tick(deltaTime);
     }
 
     handleCollisions();
 
+    camera.tick();
+    
     global.ctx.clearRect(0, 0, global.ctx.canvas.width, global.ctx.canvas.height);
     for (const o of entities) {
         o.force = new Vector();
         o.acceleration = new Vector();
 
+        if (!onScreen.includes(o.id)) {
+            continue;
+        }
+
         // Get screenspace position of entity
         camera.render(o);
     }
 
-    lastTimestamp = timestamp;
+    console.log(entities.length, onScreen.length, global.tps);
 
+    lastTimestamp = timestamp;
     ticks++;
     requestAnimationFrame(tick);
 
@@ -80,10 +107,18 @@ function tick(timestamp: DOMHighResTimeStamp) {
 
 function pause() {
     paused = true;
+    // savedCollisions = getAllCollisions();
+
+    console.log('paused', ticks);
 }
 
 function unpause() {
+    // resetCollisions();
+    // setCollisions(savedCollisions);
+    // console.log(getAllCollisions());
     paused = false;
+    justUnpaused = true;
+    console.log('unpaused', ticks);
 }
 
 function setTicks(newTicks: number) {

@@ -1,3 +1,4 @@
+import Camera from "../Camera";
 import Entity from "../Entity";
 import { Vector } from "../Vector";
 import { getById } from "./getPhysicsObject";
@@ -20,6 +21,10 @@ function handleCollisions() {
         // check every other entity for collisions
         for (const other of entities) {
             if (other.id === current.id) continue;
+
+            // Check that they are within reasonable camera bounds - performance, might remove later
+            // did remove later
+
 
             // TODO: first, check that they are nearby each other for performance
 
@@ -72,28 +77,34 @@ function handleCollisions() {
                 // console.log(collision, 'right collision', collision.bodyA)
             }
 
-            // calculate momentum
-            const aMom = a.velocity.x * a.mass;
-            const bMom = b.velocity.x * b.mass;
+
+            // v1 = u1(m1 - m2) / (m1 + m2) + u2(2m2) / (m1 + m2)
+            // v2 = u2(m2 - m1) / (m1 + m2) + u1(2m1) / (m1 + m2)
+
+            const totalMass = a.mass + b.mass;
+
+            const v1 = (a.velocity.x * (a.mass - b.mass)) / totalMass + (b.velocity.x * (2 * b.mass)) / totalMass;
+            const v2 = (b.velocity.x * (b.mass - a.mass)) / totalMass + (a.velocity.x * (2 * a.mass)) / totalMass;
 
 
-            const combinedM = (aMom + bMom) / 2;
-            // if (!a.static) a.velocity.x -= combinedM / a.mass;
-            // if (!b.static) b.velocity.x += combinedM / b.mass;
+            if (!a.static) a.velocity.x = v1;
+            if (!b.static) b.velocity.x = v2;
 
-            // if (!a.static) a.position.x += depth.x;
-            // if (!b.static) b.position.x -= depth.x;
+            if (!a.static) a.position.x += depth.x;
+            if (!b.static) b.position.x -= depth.x;
 
-            if (!a.static) {
-                a.position.x += Math.round(depth.x);
-                //a.velocity.x -= combinedM / a.mass;
-                a.velocity.x -= collision.velocity.x;
-            }
-            if (!b.static) {
-                b.position.x -= Math.floor(depth.x);
-                //b.velocity.x += combinedM / b.mass;
-                b.velocity.x += collision.velocity.x;
-            }
+
+
+            // if (!a.static) {
+            //     a.position.x += Math.round(depth.x);
+            //     //a.velocity.x -= combinedM / a.mass;
+            //     a.velocity.x -= collision.velocity.x;
+            // }
+            // if (!b.static) {
+            //     b.position.x -= Math.floor(depth.x);
+            //     //b.velocity.x += combinedM / b.mass;
+            //     b.velocity.x += collision.velocity.x;
+            // }
 
 
         } else {
@@ -107,35 +118,26 @@ function handleCollisions() {
             }
 
             // if (!a.static) {
-            //     a.position.y += depth.y;
+            //     a.position.y += Math.round(depth.y);
+            //     //a.velocity.y -= combinedM / a.mass;
             //     a.velocity.y -= collision.velocity.y;
             // }
             // if (!b.static) {
-            //     b.position.y -= depth.y;
-            //     b.velocity.y += collision.velocity.y;
+            //     b.position.y -= Math.round(depth.y);
+            //     //b.velocity.y += combinedM / b.mass;
+            //     b.velocity.y += collision.velocity.y
             // }
-            // a.acceleration.y -= a.acceleration.y;
 
-            // calculate momentum
-            const aMom = a.velocity.y * a.mass;
-            const bMom = b.velocity.y * b.mass;
+            const totalMass = a.mass + b.mass;
 
+            const v1 = (a.velocity.y * (a.mass - b.mass)) / totalMass + (b.velocity.y * (2 * b.mass)) / totalMass;
+            const v2 = (b.velocity.y * (b.mass - a.mass)) / totalMass + (a.velocity.y * (2 * a.mass)) / totalMass;
 
-            const combinedM = (aMom + bMom) / 2;
+            if (!a.static) a.velocity.y = v1;
+            if (!b.static) b.velocity.y = v2;
 
-            // if (!a.static) a.velocity.y -= combinedM / a.mass;
-            // if (!b.static) b.velocity.y += combinedM / b.mass;
-
-            if (!a.static) {
-                a.position.y += Math.round(depth.y);
-                //a.velocity.y -= combinedM / a.mass;
-                a.velocity.y -= collision.velocity.y;
-            }
-            if (!b.static) {
-                b.position.y -= Math.round(depth.y);
-                //b.velocity.y += combinedM / b.mass;
-                b.velocity.y += collision.velocity.y
-            }
+            if (!a.static) a.position.y += depth.y;
+            if (!b.static) b.position.y -= depth.y;
 
         }
 
@@ -145,6 +147,15 @@ function handleCollisions() {
     }
 
 }
+
+function setCollisions(c: Collision[]) {
+    collisions = c;
+} 
+
+function getAllCollisions(): Collision[] {
+    return collisions;
+}
+
 
 function getCollisions(target: Entity): Collision[] {
     return collisions.filter((o) => o.bodyA.id === target.id || o.bodyB.id === target.id)
@@ -178,4 +189,8 @@ class Collision {
     }
 }
 
-export { Collision, getCollisions, handleCollisions, getCollisionsBetween }
+function resetCollisions() {
+    collisions = [];
+}
+
+export { Collision, getCollisions, handleCollisions, getCollisionsBetween, resetCollisions, setCollisions, getAllCollisions }

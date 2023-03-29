@@ -76,13 +76,13 @@ class Entity implements PhysicsObject {
     }
 
     tick(deltaTime: milliseconds) {
-
         //console.log(this.acceleration);
 
 
-        // apply gravity
+
         if (!this.static) {
 
+            // apply gravity
             if (this.gravity) this.applyForce(new Vector(0, global.gravity * this.mass));
 
             const deltaTimeS = deltaTime / 1000;
@@ -100,12 +100,12 @@ class Entity implements PhysicsObject {
                 const aFriction = o.bodyA.friction;
                 const bFriction = o.bodyB.friction;
 
-                const prodFriction = aFriction * bFriction;
+                const avgFriction = (aFriction + bFriction) / 2;
 
                 if (o.type === CollisionType.Bottom || o.type === CollisionType.Top) {
-                    friction.x -= this.force.x * prodFriction;
+                    friction.x -= this.force.x * avgFriction;
                 } else {
-                    friction.y -= this.force.y * prodFriction;
+                    friction.y -= this.force.y * avgFriction;
                 }
             }
 
@@ -131,7 +131,7 @@ class Entity implements PhysicsObject {
     }
 
     // Only for internal use
-    isCollidingWith(bs: PhysicsObject[]) {
+    isCollidingWith(bs: Entity[]) {
         let colliding = false;
 
         const a = this;
