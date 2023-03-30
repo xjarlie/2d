@@ -33,6 +33,10 @@ function main() {
     box.static = false;
     box.add();
 
+    const smallBox = new Entity(400, 200, 30, 30);
+    smallBox.group = EntityGroup.Box;
+    smallBox.add();
+
     // camera.glide(new Vector(300, 300), 60);
 
     // const smallBoxOne = new Entity(350, 200, 30, 30);
@@ -62,6 +66,10 @@ function main() {
 
 function reset() {
     pause();
+
+    for (const i in global.entities) {
+        delete global.entities[i];
+    }
 
     global.entities = [];
     global.ctx.clearRect(0, 0, global.ctx.canvas.width, global.ctx.canvas.height);

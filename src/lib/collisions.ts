@@ -18,8 +18,10 @@ function handleCollisions() {
     // loop through all entities, and check for box collisions
     for (const current of entities) {
 
+        const isColliding: Entity[] = current.getColliding(entities);
+
         // check every other entity for collisions
-        for (const other of entities) {
+        for (const other of isColliding) {
             if (other.id === current.id) continue;
 
             // Check that they are within reasonable camera bounds - performance, might remove later
@@ -28,15 +30,18 @@ function handleCollisions() {
             // KD Trees? idk what they are but might work https://www.baeldung.com/cs/k-d-trees
 
             // then, specific collision
-            const collision = current.getCollisionWith(other);
+            const collision: Collision = current.getCollisionWith(other, false);
             if (collision !== null) {
 
                 // check if collision already exists but reversed
-                const duplicates = collisions.filter((o) => {
+                // const duplicates = collisions.filter((o) => {
+                //     return (o.bodyA.id === collision.bodyB.id && o.bodyB.id === collision.bodyA.id) || (o.bodyA.id === collision.bodyA.id && o.bodyB.id === collision.bodyB.id);
+                // })
+                const duplicates: boolean = collisions.some((o) => {
                     return (o.bodyA.id === collision.bodyB.id && o.bodyB.id === collision.bodyA.id) || (o.bodyA.id === collision.bodyA.id && o.bodyB.id === collision.bodyB.id);
-                })
+                });
 
-                if (duplicates.length === 0) {
+                if (!duplicates) {
                     collisions.push(collision);
                 }
             }
@@ -52,7 +57,11 @@ function handleCollisions() {
         const a = getById(collision.bodyA.id);
         const b = getById(collision.bodyB.id);
 
-        const transformation = collision.velocity;
+        const totalMass = a.mass + b.mass;
+        const massAMinusBOverTotal = (a.mass - b.mass) / totalMass;
+        const massBMinusAOverTotal = (b.mass - a.mass) / totalMass;
+        const massATimes2OverTotal = (2 * a.mass) / totalMass;
+        const massBTimes2OverTotal = (2 * b.mass) / totalMass;
 
         // a.acceleration = Vector.sum(a.acceleration, transformation.negative());
         // b.acceleration = Vector.sum(b.acceleration, transformation);
@@ -69,22 +78,17 @@ function handleCollisions() {
 
         if (Math.abs(depth.x) < Math.abs(depth.y)) {
             // Collision along X axis
-            if (depth.x > 0) {
-                // Left side
-                // console.log(collision, 'left collision', collision.bodyA)
-            } else {
-                // Right side
-                // console.log(collision, 'right collision', collision.bodyA)
-            }
-
 
             // v1 = u1(m1 - m2) / (m1 + m2) + u2(2m2) / (m1 + m2)
             // v2 = u2(m2 - m1) / (m1 + m2) + u1(2m1) / (m1 + m2)
 
-            const totalMass = a.mass + b.mass;
+            
 
-            const v1 = (a.velocity.x * (a.mass - b.mass)) / totalMass + (b.velocity.x * (2 * b.mass)) / totalMass;
-            const v2 = (b.velocity.x * (b.mass - a.mass)) / totalMass + (a.velocity.x * (2 * a.mass)) / totalMass;
+            // const v1 = (a.velocity.x * (a.mass - b.mass)) / totalMass + (b.velocity.x * (2 * b.mass)) / totalMass;
+            // const v2 = (b.velocity.x * (b.mass - a.mass)) / totalMass + (a.velocity.x * (2 * a.mass)) / totalMass;
+            
+            const v1 = (a.velocity.x * massAMinusBOverTotal) + (b.velocity.x * massBTimes2OverTotal);
+            const v2 = (b.velocity.x * massBMinusAOverTotal) + (a.velocity.x * massATimes2OverTotal);
 
 
             if (!a.static) a.velocity.x = v1;
@@ -109,13 +113,6 @@ function handleCollisions() {
 
         } else {
             // Collision along Y axis
-            if (depth.y > 0) {
-                // Top side
-                // console.log(collision, 'top collision', collision.bodyA)
-            } else {
-                // Bottom side
-                // console.log(collision, 'bottom collision', collision.bodyA)
-            }
 
             // if (!a.static) {
             //     a.position.y += Math.round(depth.y);
@@ -128,10 +125,11 @@ function handleCollisions() {
             //     b.velocity.y += collision.velocity.y
             // }
 
-            const totalMass = a.mass + b.mass;
+            // const v1 = (a.velocity.y * (a.mass - b.mass)) / totalMass + (b.velocity.y * (2 * b.mass)) / totalMass;
+            // const v2 = (b.velocity.y * (b.mass - a.mass)) / totalMass + (a.velocity.y * (2 * a.mass)) / totalMass;
 
-            const v1 = (a.velocity.y * (a.mass - b.mass)) / totalMass + (b.velocity.y * (2 * b.mass)) / totalMass;
-            const v2 = (b.velocity.y * (b.mass - a.mass)) / totalMass + (a.velocity.y * (2 * a.mass)) / totalMass;
+            const v1 = (a.velocity.y * massAMinusBOverTotal) + (b.velocity.y * massBTimes2OverTotal);
+            const v2 = (b.velocity.y * massBMinusAOverTotal) + (a.velocity.y * massATimes2OverTotal);
 
             if (!a.static) a.velocity.y = v1;
             if (!b.static) b.velocity.y = v2;

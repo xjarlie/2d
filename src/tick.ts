@@ -97,8 +97,6 @@ function tick(timestamp: DOMHighResTimeStamp) {
         camera.render(o);
     }
 
-    console.log(entities.length, onScreen.length, global.tps);
-
     lastTimestamp = timestamp;
     ticks++;
     requestAnimationFrame(tick);

@@ -18,7 +18,7 @@ class Player extends Entity {
     constructor(posX: number, posY: number) {
         super(posX, posY, 50, 50);
 
-        this.movementForce = 2_500_000_0;
+        this.movementForce = 25_000_000;
         this.jumpForce = 400_000_000;
         this.density = 1;
         this.direction = 0;
