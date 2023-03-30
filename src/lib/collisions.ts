@@ -24,8 +24,6 @@ function handleCollisions() {
         for (const other of isColliding) {
             if (other.id === current.id) continue;
 
-            // Check that they are within reasonable camera bounds - performance, might remove later
-            // did remove later
             // Performance is terrible - O(n^2) i think bc nested loop
             // KD Trees? idk what they are but might work https://www.baeldung.com/cs/k-d-trees
 
@@ -34,9 +32,6 @@ function handleCollisions() {
             if (collision !== null) {
 
                 // check if collision already exists but reversed
-                // const duplicates = collisions.filter((o) => {
-                //     return (o.bodyA.id === collision.bodyB.id && o.bodyB.id === collision.bodyA.id) || (o.bodyA.id === collision.bodyA.id && o.bodyB.id === collision.bodyB.id);
-                // })
                 const duplicates: boolean = collisions.some((o) => {
                     return (o.bodyA.id === collision.bodyB.id && o.bodyB.id === collision.bodyA.id) || (o.bodyA.id === collision.bodyA.id && o.bodyB.id === collision.bodyB.id);
                 });
@@ -49,6 +44,9 @@ function handleCollisions() {
 
         }
     }
+
+
+
 
     // Handle collision physics
 
@@ -82,11 +80,11 @@ function handleCollisions() {
             // v1 = u1(m1 - m2) / (m1 + m2) + u2(2m2) / (m1 + m2)
             // v2 = u2(m2 - m1) / (m1 + m2) + u1(2m1) / (m1 + m2)
 
-            
+
 
             // const v1 = (a.velocity.x * (a.mass - b.mass)) / totalMass + (b.velocity.x * (2 * b.mass)) / totalMass;
             // const v2 = (b.velocity.x * (b.mass - a.mass)) / totalMass + (a.velocity.x * (2 * a.mass)) / totalMass;
-            
+
             const v1 = (a.velocity.x * massAMinusBOverTotal) + (b.velocity.x * massBTimes2OverTotal);
             const v2 = (b.velocity.x * massBMinusAOverTotal) + (a.velocity.x * massATimes2OverTotal);
 
