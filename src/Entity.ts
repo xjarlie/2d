@@ -9,7 +9,8 @@ import Composite from "./Composite";
 
 class Entity implements PhysicsObject {
 
-    position: Vector;
+    cornerPos: Vector;
+    center: Vector;
     size: Vector;
     velocity: Vector;
     force: Vector;
@@ -28,9 +29,8 @@ class Entity implements PhysicsObject {
     parentComposite?: Composite;
 
     constructor(posX: number = 0, posY: number = 0, sizeX: number = 50, sizeY: number = 50) {
-
-        this.position = new Vector(posX, posY);
         this.size = new Vector(sizeX, sizeY);
+        this.position = new Vector(posX, posY);
         this.velocity = new Vector();
         this.acceleration = new Vector();
         this.density = 1;
@@ -47,18 +47,21 @@ class Entity implements PhysicsObject {
 
     }
 
+    get position(): Vector {
+        return this.cornerPos;
+    }
+
+    set position(p: Vector) {
+        this.cornerPos = p;
+        this.center = new Vector(p.x + this.size.x / 2, this.position.y + this.size.y / 2)
+    } 
+
     get area(): number {
         return this.size.x * this.size.y;
     }
 
     get mass(): number {
         return this.area * this.density;
-    }
-
-    get center(): Vector {
-        const x = this.position.x + this.size.x / 2;
-        const y = this.position.y + this.size.y / 2;
-        return new Vector(x, y);
     }
 
     applyForce(f: Vector) {

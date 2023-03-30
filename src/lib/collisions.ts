@@ -13,7 +13,7 @@ function handleCollisions() {
 
     collisions = [];
 
-    const entities: PhysicsObject[] = global.entities;
+    const entities: Entity[] = global.entities;
 
     // loop through all entities, and check for box collisions
     for (const current of entities) {
@@ -24,10 +24,8 @@ function handleCollisions() {
 
             // Check that they are within reasonable camera bounds - performance, might remove later
             // did remove later
-
-
-            // TODO: first, check that they are nearby each other for performance
-
+            // Performance is terrible - O(n^2) i think bc nested loop
+            // KD Trees? idk what they are but might work https://www.baeldung.com/cs/k-d-trees
 
             // then, specific collision
             const collision = current.getCollisionWith(other);
@@ -35,13 +33,15 @@ function handleCollisions() {
 
                 // check if collision already exists but reversed
                 const duplicates = collisions.filter((o) => {
-                    return (o.bodyA.id === collision.bodyB.id && o.bodyB.id === collision.bodyA.id) || (o.bodyA.id === collision.bodyA.id && o.bodyB.id === collision.bodyB.id); 
+                    return (o.bodyA.id === collision.bodyB.id && o.bodyB.id === collision.bodyA.id) || (o.bodyA.id === collision.bodyA.id && o.bodyB.id === collision.bodyB.id);
                 })
 
                 if (duplicates.length === 0) {
                     collisions.push(collision);
                 }
             }
+
+
         }
     }
 
@@ -150,7 +150,7 @@ function handleCollisions() {
 
 function setCollisions(c: Collision[]) {
     collisions = c;
-} 
+}
 
 function getAllCollisions(): Collision[] {
     return collisions;
