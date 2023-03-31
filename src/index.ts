@@ -1,13 +1,12 @@
-import Entity from "./Entity";
+import Entity from "./lib/Entity";
 import global, { resetGlobal } from "./lib/global";
 import { keyListener } from "./lib/keyMap";
-import { pause, setTicks, tick, ticks, unpause } from "./tick";
-import Player from "./Player";
-import { Vector } from "./Vector";
+import { pause, setTicks, tick, ticks, unpause } from "./lib/tick";
+import Player from "./entities/Player";
+import { Vector } from "./lib/Vector";
 import { EntityGroup } from "./lib/types";
-import Ground from "./Ground";
-import Camera from "./Camera";
-import Composite from "./Composite";
+import Ground from "./entities/Ground";
+import Camera from "./lib/Camera";
 import { resetCollisions } from "./lib/collisions";
 
 function main() {
@@ -29,12 +28,12 @@ function main() {
     player.add();
 
     const box = new Entity(300, 200, 50, 50);
-    box.group = EntityGroup.Box;
+    box.groups.push(EntityGroup.Box);
     box.static = false;
     box.add();
 
     const smallBox = new Entity(400, 200, 30, 30);
-    smallBox.group = EntityGroup.Box;
+    smallBox.groups.push(EntityGroup.Box);
     smallBox.add();
 
     // camera.glide(new Vector(300, 300), 60);

@@ -1,11 +1,11 @@
-import Entity from "./Entity";
-import { nextID } from "./lib/getPhysicsObject";
-import { EntityGroup, PhysicsObject } from "./lib/types";
-import { Vector } from "./Vector";
+import Entity from "./lib/Entity";
+import { nextID } from "./lib/getEntities";
+import { EntityGroup } from "./lib/types";
+import { Vector } from "./lib/Vector";
 import global from "./lib/global";
 import { Collision } from "./lib/collisions";
 
-class Composite implements PhysicsObject {
+class Composite  {
     cPos: Vector;
 
     id: number;
@@ -63,7 +63,7 @@ class Composite implements PhysicsObject {
         global.entities.push(this);
     }
 
-    isCollidingWith(bs: PhysicsObject[]): boolean {
+    isCollidingWith(bs: Entity[]): boolean {
         return false;
     }
 

@@ -1,9 +1,9 @@
-import Camera from "../Camera";
-import Entity from "../Entity";
-import { Vector } from "../Vector";
-import { getById } from "./getPhysicsObject";
+import Camera from "./Camera";
+import Entity from "./Entity";
+import { Vector } from "./Vector";
+import { getById } from "./getEntities";
 import global from "./global";
-import { CollisionType, PhysicsObject } from "./types";
+import { CollisionType, EntityGroup } from "./types";
 
 let collisions: Collision[] = [];
 
@@ -18,11 +18,19 @@ function handleCollisions() {
     // loop through all entities, and check for box collisions
     for (const current of entities) {
 
+        const currentMask: EntityGroup[] = current.collisionMask;
+        if (currentMask.length === 0) continue;
+
         const isColliding: Entity[] = current.getColliding(entities);
 
         // check every other entity for collisions
         for (const other of isColliding) {
             if (other.id === current.id) continue;
+            
+            const otherMask: EntityGroup[] = other.collisionMask;
+            if (otherMask.length === 0) continue;
+
+            if (!(currentMask.some(r => other.groups.includes(r)) && otherMask.some(r => current.groups.includes(r)))) continue;
 
             // Performance is terrible - O(n^2) i think bc nested loop
             // KD Trees? idk what they are but might work https://www.baeldung.com/cs/k-d-trees

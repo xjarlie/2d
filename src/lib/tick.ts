@@ -1,10 +1,10 @@
-import { reset } from ".";
+import { reset } from "..";
 import Camera from "./Camera";
 import Entity from "./Entity";
-import { Collision, getAllCollisions, getCollisionsBetween, handleCollisions, resetCollisions, setCollisions } from "./lib/collisions";
-import global from "./lib/global";
-import { keyPressed } from "./lib/keyMap";
-import { milliseconds } from "./lib/types";
+import { Collision, getAllCollisions, getCollisionsBetween, handleCollisions, resetCollisions, setCollisions } from "./collisions";
+import global from "./global";
+import { keyPressed } from "./keyMap";
+import { milliseconds } from "./types";
 import { Vector } from "./Vector";
 
 let ticks: number = 0;

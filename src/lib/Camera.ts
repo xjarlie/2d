@@ -1,5 +1,5 @@
-import global from "./lib/global";
-import { PhysicsObject } from "./lib/types";
+import Entity from "./Entity";
+import global from "./global";
 import { Vector } from "./Vector";
 
 class Camera {
@@ -55,7 +55,7 @@ class Camera {
         if (useY) this.position.y = v.y - this.ctx.canvas.height / 2;
     }
 
-    render(item: PhysicsObject) {
+    render(item: Entity) {
         item.draw(this.getScreenSpace(item.position))
     }
 

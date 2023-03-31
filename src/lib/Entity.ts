@@ -1,13 +1,12 @@
 import { Vector } from "./Vector";
-import global from "./lib/global";
-import { CollisionType, EntityGroup, milliseconds } from "./lib/types";
+import global from "./global";
+import { CollisionType, EntityGroup, milliseconds } from "./types";
 import { ticks } from "./tick";
-import { getByGroup, nextID } from "./lib/getPhysicsObject";
-import { Collision, getCollisions, getCollisionsBetween } from "./lib/collisions";
-import { PhysicsObject } from "./lib/types";
-import Composite from "./Composite";
+import { getByGroup, nextID } from "./getEntities";
+import { Collision, getCollisions, getCollisionsBetween } from "./collisions";
+import Composite from "../Composite";
 
-class Entity implements PhysicsObject {
+class Entity {
 
     cornerPos: Vector;
     center: Vector;
@@ -24,7 +23,9 @@ class Entity implements PhysicsObject {
     friction: number;
 
     id: number;
-    group: EntityGroup;
+    groups: EntityGroup[];
+
+    collisionMask: EntityGroup[];
 
     parentComposite?: Composite;
 
@@ -40,10 +41,11 @@ class Entity implements PhysicsObject {
         this.force = new Vector();
         this.maxSpeed = -1;
         this.static = false;
-        this.friction = 1;
+        this.friction = 0.05;
 
-        this.group = EntityGroup.Default;
+        this.groups = [EntityGroup.Default];
         this.id = -1;
+        this.collisionMask = [EntityGroup.Default];
 
     }
 
@@ -107,55 +109,33 @@ class Entity implements PhysicsObject {
 
                 const avgFriction = (aFriction + bFriction) / 2;
 
-                
-
+            
                 if (o.type === CollisionType.Bottom || o.type === CollisionType.Top) {
 
-                    const fFriction = Math.abs(Math.round(this.force.y)) * avgFriction * Math.sign(Math.round(this.velocity.x))
+                    const fFriction = Math.round(this.force.y) * avgFriction;
 
-                    // if (Math.abs(Math.round(this.velocity.x)) > 0) {
-                    //     friction.x -= fFriction;
-                    // } else {
-                    //     if (this.force.x > 0) {
-                    //         // positive
-                    //         if (this.force.x < fFriction) {
-                    //             this.velocity.x = 0;
-                    //         }
+                    if (Math.abs(fFriction) > Math.abs(this.force.x)) {
+                        // this.velocity.x = 0;
+                        this.velocity.x *= 1 - avgFriction;
+                    } else {
+                        if (Math.abs(Math.round(this.velocity.x)) > 0) friction.x -= fFriction;
+                    }
 
-                    //     } else {
-                    //         // negative
-
-                    //         if (this.force.x < fFriction) {
-                    //             this.velocity.x = 0;
-                    //         }
-                    //     }
-                    // } 
-
-                    if (Math.abs(Math.round(this.velocity.x)) > 0) friction.x -= fFriction;
-
-                    
                 } else {
 
-                    const fFriction = Math.abs(Math.round(this.force.x)) * avgFriction * Math.sign(Math.round(this.velocity.y));
+                    const fFriction = Math.round(this.force.x) * avgFriction;
 
-                    // if (Math.abs(Math.round(this.velocity.y)) > 0) {
-                    //     friction.y -= fFriction;
-                    // } else {
-                    //     if (this.force.y > 0) {
-                    //         // positive
-                    //         if (this.force.y < fFriction) {
-                    //             this.velocity.y = 0;
-                    //         }
+                    if (Math.abs(fFriction) > Math.abs(this.force.y)) {
+                        // this.velocity.y = 0;
+                        this.velocity.y *= 1 - avgFriction;
+                        // this.velocity.y += (fFriction / this.acceleration.y) * deltaTimeS * -Math.sign(this.velocity.y);
+                        if (Math.abs(Math.round(this.velocity.y)) > 0) friction.y -= this.force.y;
+                        // if (Math.abs(Math.round(this.velocity.y)) > 0) friction.y -= fFriction;
+                    } else {
+                        if (Math.abs(Math.round(this.velocity.y)) > 0) friction.y -= fFriction;
+                    }
 
-                    //     } else {
-                    //         // negative
-
-                    //         if (this.force.y < fFriction) {
-                    //             this.velocity.y = 0;
-                    //         }
-                    //     }
-                    // }
-                    if (Math.abs(Math.round(this.velocity.y)) > 0) friction.y -= fFriction;
+                    
                     
                 }
 
@@ -164,7 +144,7 @@ class Entity implements PhysicsObject {
                 //console.log(this, avgFriction, friction);
             }
 
-            if (this.group === EntityGroup.Player) console.log(this.group, this.force.y, this.velocity.x, friction.x)
+            // if (this.groups.includes(EntityGroup.Player)) console.log(this.groups, this.force.y, this.velocity.x, friction.x)
 
             // if (Math.round(this.velocity.x) === 0) this.velocity.x = 0;
             // if (Math.round(this.velocity.y) === 0) this.velocity.y = 0;
@@ -172,29 +152,26 @@ class Entity implements PhysicsObject {
             // if (Math.round(Math.abs(this.velocity.x)) === 0) friction.x = 0;
             // if (Math.round(Math.abs(this.velocity.y)) === 0) friction.y = 0;
 
-            const weirdFriction = new Vector(0,0);
+            // const weirdFriction = new Vector(0,0);
 
-            for (const o of allCollisions) {
-                const aFriction = o.bodyA.friction;
-                const bFriction = o.bodyB.friction;
+            // for (const o of allCollisions) {
+            //     const aFriction = o.bodyA.friction;
+            //     const bFriction = o.bodyB.friction;
 
-                const avgFriction = (aFriction + bFriction) / 2;
+            //     const avgFriction = (aFriction + bFriction) / 2;
 
-                if (o.type === CollisionType.Bottom || o.type === CollisionType.Top) {
+            //     if (o.type === CollisionType.Bottom || o.type === CollisionType.Top) {
 
-                    weirdFriction.x -= -1 * avgFriction * this.size.y * Math.pow(this.velocity.x, 2) * Math.sign(this.velocity.x);
+            //         weirdFriction.x -= -1 * avgFriction * this.size.y * Math.pow(this.velocity.x, 2) * Math.sign(this.velocity.x);
 
-                } else {
+            //     } else {
 
-                    weirdFriction.y -= -1 * avgFriction * this.size.x * Math.pow(this.velocity.y, 2) * Math.sign(this.velocity.y);
+            //         weirdFriction.y -= -1 * avgFriction * this.size.x * Math.pow(this.velocity.y, 2) * Math.sign(this.velocity.y);
 
-                }
+            //     }
 
-            }
-
-
+            // }
             
-
             this.force = Vector.sum(this.force, airRes, friction);
 
             // apply acceleration a = f/m
