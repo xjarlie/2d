@@ -8,6 +8,7 @@ import { EntityGroup } from "./lib/types";
 import Ground from "./entities/Ground";
 import Camera from "./lib/Camera";
 import { resetCollisions } from "./lib/collisions";
+import PhysicsEngine from "./lib/PhysicsEngine";
 
 function main() {
 
@@ -16,15 +17,18 @@ function main() {
 
 
     global.ctx = ctx;
-    global.gravity = 9.81 * 200;
-    // global.scale = 0.1;
-    global.airConstant = 0.9;
+
+    const physics = new PhysicsEngine({
+        gravity: 9.81 * 200,
+        airConstant: 0.9
+    });
+    global.physics = physics;
 
     const camera = new Camera(ctx);
     global.camera = camera;
 
     const player = new Player(200, 200);
-    player.gravity = true;
+    player.hasGravity = true;
     player.add();
 
     const box = new Entity(300, 200, 50, 50);

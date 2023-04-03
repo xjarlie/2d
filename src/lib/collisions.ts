@@ -7,7 +7,7 @@ import { CollisionType, EntityGroup } from "./types";
 
 let collisions: Collision[] = [];
 
-function handleCollisions() {
+function updateCollisions() {
     // update collision array
     // called every tick
 
@@ -52,104 +52,6 @@ function handleCollisions() {
 
         }
     }
-
-
-
-
-    // Handle collision physics
-
-    for (const collision of collisions) {
-
-        const a = getById(collision.bodyA.id);
-        const b = getById(collision.bodyB.id);
-
-        const totalMass = a.mass + b.mass;
-        const massAMinusBOverTotal = (a.mass - b.mass) / totalMass;
-        const massBMinusAOverTotal = (b.mass - a.mass) / totalMass;
-        const massATimes2OverTotal = (2 * a.mass) / totalMass;
-        const massBTimes2OverTotal = (2 * b.mass) / totalMass;
-
-        // a.acceleration = Vector.sum(a.acceleration, transformation.negative());
-        // b.acceleration = Vector.sum(b.acceleration, transformation);
-
-        // console.log(a.force, b.force);
-        // a.applyForce(a.force.negative());
-        // b.applyForce(b.force.negative());
-        // console.log(a.force, b.force);
-
-        // a.velocity = Vector.sum(a.velocity, transformation.negative());
-        // b.velocity = Vector.sum(b.velocity, transformation);
-
-        const depth = collision.depth;
-
-        if (Math.abs(depth.x) < Math.abs(depth.y)) {
-            // Collision along X axis
-
-            // v1 = u1(m1 - m2) / (m1 + m2) + u2(2m2) / (m1 + m2)
-            // v2 = u2(m2 - m1) / (m1 + m2) + u1(2m1) / (m1 + m2)
-
-
-
-            // const v1 = (a.velocity.x * (a.mass - b.mass)) / totalMass + (b.velocity.x * (2 * b.mass)) / totalMass;
-            // const v2 = (b.velocity.x * (b.mass - a.mass)) / totalMass + (a.velocity.x * (2 * a.mass)) / totalMass;
-
-            const v1 = (a.velocity.x * massAMinusBOverTotal) + (b.velocity.x * massBTimes2OverTotal);
-            const v2 = (b.velocity.x * massBMinusAOverTotal) + (a.velocity.x * massATimes2OverTotal);
-
-
-            if (!a.static) a.velocity.x = v1;
-            if (!b.static) b.velocity.x = v2;
-
-            if (!a.static) a.position.x += depth.x;
-            if (!b.static) b.position.x -= depth.x;
-
-
-
-            // if (!a.static) {
-            //     a.position.x += Math.round(depth.x);
-            //     //a.velocity.x -= combinedM / a.mass;
-            //     a.velocity.x -= collision.velocity.x;
-            // }
-            // if (!b.static) {
-            //     b.position.x -= Math.floor(depth.x);
-            //     //b.velocity.x += combinedM / b.mass;
-            //     b.velocity.x += collision.velocity.x;
-            // }
-
-
-        } else {
-            // Collision along Y axis
-
-            // if (!a.static) {
-            //     a.position.y += Math.round(depth.y);
-            //     //a.velocity.y -= combinedM / a.mass;
-            //     a.velocity.y -= collision.velocity.y;
-            // }
-            // if (!b.static) {
-            //     b.position.y -= Math.round(depth.y);
-            //     //b.velocity.y += combinedM / b.mass;
-            //     b.velocity.y += collision.velocity.y
-            // }
-
-            // const v1 = (a.velocity.y * (a.mass - b.mass)) / totalMass + (b.velocity.y * (2 * b.mass)) / totalMass;
-            // const v2 = (b.velocity.y * (b.mass - a.mass)) / totalMass + (a.velocity.y * (2 * a.mass)) / totalMass;
-
-            const v1 = (a.velocity.y * massAMinusBOverTotal) + (b.velocity.y * massBTimes2OverTotal);
-            const v2 = (b.velocity.y * massBMinusAOverTotal) + (a.velocity.y * massATimes2OverTotal);
-
-            if (!a.static) a.velocity.y = v1;
-            if (!b.static) b.velocity.y = v2;
-
-            if (!a.static) a.position.y += depth.y;
-            if (!b.static) b.position.y -= depth.y;
-
-        }
-
-        // const posTranslate = Vector.multiply(Vector.sign(a.velocity), 2);
-        // a.position = Vector.sum(a.position, posTranslate.negative());
-
-    }
-
 }
 
 function setCollisions(c: Collision[]) {
@@ -197,4 +99,4 @@ function resetCollisions() {
     collisions = [];
 }
 
-export { Collision, getCollisions, handleCollisions, getCollisionsBetween, resetCollisions, setCollisions, getAllCollisions }
+export { Collision, getCollisions, updateCollisions, getCollisionsBetween, resetCollisions, setCollisions, getAllCollisions }

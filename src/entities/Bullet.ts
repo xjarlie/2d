@@ -14,7 +14,7 @@ class Bullet extends Entity {
 
         this.firedForce = force;
         this.isForceApplied = false;
-        this.gravity = false;
+        this.hasGravity = false;
 
         this.collisionMask = [EntityGroup.Box];
 

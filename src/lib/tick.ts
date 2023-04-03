@@ -1,11 +1,12 @@
 import { reset } from "..";
 import Camera from "./Camera";
 import Entity from "./Entity";
-import { Collision, getAllCollisions, getCollisionsBetween, handleCollisions, resetCollisions, setCollisions } from "./collisions";
+import { Collision, getAllCollisions, getCollisionsBetween, updateCollisions, resetCollisions, setCollisions } from "./collisions";
 import global from "./global";
 import { keyPressed } from "./keyMap";
 import { milliseconds } from "./types";
 import { Vector } from "./Vector";
+import PhysicsEngine from "./PhysicsEngine";
 
 let ticks: number = 0;
 let paused: boolean = false;
@@ -26,7 +27,6 @@ function tick(timestamp: DOMHighResTimeStamp) {
     }
 
     const deltaTime: milliseconds = justUnpaused ? 16.67 : timestamp - lastTimestamp;
-
     justUnpaused = false;
 
     global.tps = 1 / (deltaTime / 1000);
@@ -35,7 +35,6 @@ function tick(timestamp: DOMHighResTimeStamp) {
 
     //console.info('TPS: ', global.tps);
 
-    // move camera - Doesn't really work - prob need custom class
     if (keyPressed("ArrowLeft")) {
         camera.translate(-10, 0);
     }
@@ -60,6 +59,7 @@ function tick(timestamp: DOMHighResTimeStamp) {
     }
 
     const entities: Entity[] = [...global.entities];
+    const physics: PhysicsEngine = global.physics;
 
     const onScreen: number[] = [];
 
@@ -77,13 +77,16 @@ function tick(timestamp: DOMHighResTimeStamp) {
             onScreen.push(o.id);
         }
 
-        if (ticks > 5) o.tick(deltaTime);
+        if (ticks > 5) {
+            physics.applyPhysics(o);
+            o.tick(deltaTime);
+        };
     }
 
-    handleCollisions();
+    updateCollisions();
+    physics.handleCollisions(getAllCollisions());
 
-    camera.tick();
-    
+    camera.tick(); 
     global.ctx.clearRect(0, 0, global.ctx.canvas.width, global.ctx.canvas.height);
     for (const o of entities) {
         o.force = new Vector();
