@@ -58,7 +58,7 @@ class Entity {
             Vector.sum(this.position, new Vector(0, this.size.y))
         );
 
-        this.graphics = new Graphics(this, GraphicsType.Rectangle);
+        this.graphics = new Graphics(this.id, GraphicsType.Rectangle);
 
     }
 

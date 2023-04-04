@@ -8,7 +8,7 @@ import { getCollisionsBetween } from "../lib/collisions";
 import { getByGroup } from "../lib/getEntities";
 import Camera from "../lib//Camera";
 import Bullet from "./Bullet";
-import Graphics, { GraphicsType } from "../lib/Graphics";
+import Graphics, { GraphicsType, Sprite } from "../lib/Graphics";
 
 class Player extends Entity {
 
@@ -32,8 +32,8 @@ class Player extends Entity {
 
         this.groups.push(EntityGroup.Player);
 
-        this.graphics = new Graphics(this, GraphicsType.Image, 1);
-        this.graphics.setSprite('img/itsame.jpg');
+        this.graphics = new Graphics(this.id, GraphicsType.Image, 1);
+        this.graphics.sprite = new Sprite("img/itsame.jpg");
 
     }
 
