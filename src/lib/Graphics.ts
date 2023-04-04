@@ -14,8 +14,8 @@ class Graphics {
     // Image / Texture
     sprite?: Sprite;
 
-    constructor(parentID: number, type: GraphicsType = GraphicsType.Rectangle, scale: number = 1) {
-        this.parent = getById(parentID);
+    constructor(parent: Entity, type: GraphicsType = GraphicsType.Rectangle, scale: number = 1) {
+        this.parent = parent;
         this.type = type;
         this.scale = scale;
 
@@ -39,20 +39,16 @@ class Graphics {
 
         } else if (this.type === GraphicsType.Image) {
 
-            console.log('IMAGE TYPE', this.parent);
-
-            if (this.sprite.initialized) {
-                switch (this.sprite.fit) {
-                    case "fit": {
-                        this.sprite.width = this.parent.size.x;
-                        this.sprite.height = this.parent.size.y;
-                    }
+            switch (this.sprite.fit) {
+                case "fit": {
+                    this.sprite.width = this.parent.size.x;
+                    this.sprite.height = this.parent.size.y;
                 }
-
-                const tL = Vector.subtract(center, new Vector(this.sprite.width / 2, this.sprite.height / 2));
-
-                ctx.drawImage(this.sprite.bitmap, tL.x, tL.y, this.sprite.width, this.sprite.height);
             }
+
+            const topLeft = Vector.subtract(center, new Vector(this.sprite.width / 2, this.sprite.height / 2));
+
+            ctx.drawImage(this.sprite.image, topLeft.x, topLeft.y, this.sprite.width, this.sprite.height);
 
         }
     }
@@ -63,31 +59,20 @@ type FitType = "default" | "fit" | "tile";
 class Sprite {
     fit: FitType;
     src: string;
-    bitmap: ImageBitmap;
+
+    image: HTMLImageElement;
     width: number;
     height: number;
-
-    initialized: boolean;
 
     constructor(src: string, fit: FitType = "default") {
         this.src = `${__webpack_public_path__}/${src}`;
         this.fit = fit;
 
-        this.initialized = false;
+        this.image = new Image();
+        this.image.src = this.src;
 
-        const image = new Image();
-        image.src = this.src;
-        const init = async () => {
-            const starting = performance.now();
-            this.bitmap = await createImageBitmap(image);
-            this.initialized = true;
-
-            console.log(performance.now() - starting);
-
-            this.width = this.bitmap.width;
-            this.height = this.bitmap.height;
-        };
-        init();
+        this.height = this.image.height;
+        this.width = this.image.width;
 
     }
 }
@@ -97,6 +82,39 @@ class SpriteSheet extends Sprite {
         super(src);
 
 
+    }
+}
+
+type AnimationFrame = {
+    duration: number;
+    sprite: Sprite;
+    delayAfter: number
+}
+
+class Animation {
+    frames: AnimationFrame[];
+    standardDelay: number;
+
+    constructor(frames: AnimationFrame[] = []) {
+        this.frames = frames;
+        this.standardDelay = 0;
+
+    }
+
+    static fromSpriteSheet(sheet: SpriteSheet, metadata: {duration: number; delayAfter: number}[]): Animation {
+        
+        const frameList: AnimationFrame[] = [];
+        const sprites: Sprite[] = []; // Get sprites from spritesheet
+
+        for (const i in sprites) {
+            const frame: AnimationFrame = {
+                sprite: sprites[i],
+                ...metadata[i]
+            };
+            frameList[i] = frame;
+        }
+
+        return new Animation(frameList);
     }
 }
 

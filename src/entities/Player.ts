@@ -32,9 +32,9 @@ class Player extends Entity {
 
         this.groups.push(EntityGroup.Player);
 
-        this.graphics = new Graphics(this.id, GraphicsType.Image, 1);
+        this.graphics = new Graphics(this, GraphicsType.Image);
         this.graphics.sprite = new Sprite("img/itsame.jpg");
-
+        this.graphics.sprite.fit = "fit";
     }
 
     tick(deltaTime: milliseconds) {
