@@ -56,7 +56,7 @@ class Camera {
     }
 
     render(item: Entity) {
-        item.draw(this.getScreenSpace(item.position))
+        item.draw(this.getScreenSpace(item.center))
     }
 
     tick() {

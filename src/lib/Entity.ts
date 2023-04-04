@@ -6,6 +6,7 @@ import { getByGroup, nextID } from "./getEntities";
 import { Collision, getCollisions, getCollisionsBetween } from "./collisions";
 import Composite from "../Composite";
 import Bounds from "./Bounds";
+import Graphics, { GraphicsType } from "./Graphics";
 
 class Entity {
 
@@ -29,6 +30,7 @@ class Entity {
     collisionMask: EntityGroup[];
 
     bounds: Bounds;
+    graphics: Graphics;
 
     constructor(posX: number = 0, posY: number = 0, sizeX: number = 50, sizeY: number = 50) {
         this.size = new Vector(sizeX, sizeY);
@@ -54,7 +56,9 @@ class Entity {
             Vector.sum(this.position, new Vector(this.size.x, 0)),
             Vector.sum(this.position, this.size),
             Vector.sum(this.position, new Vector(0, this.size.y))
-        )
+        );
+
+        this.graphics = new Graphics(this, GraphicsType.Rectangle);
 
     }
 
@@ -80,13 +84,17 @@ class Entity {
         this.force = Vector.sum(this.force, f);
     }
 
-    draw(position = this.position) {
+    // draw(position = this.position) {
 
-        const ctx = global.ctx as CanvasRenderingContext2D;
+    //     const ctx = global.ctx as CanvasRenderingContext2D;
 
-        ctx.fillStyle = this.color;
-        ctx.fillRect(position.x, position.y, this.size.x, this.size.y);
+    //     ctx.fillStyle = this.color;
+    //     ctx.fillRect(position.x, position.y, this.size.x, this.size.y);
 
+    // }
+
+    draw(center: Vector = this.center, scale: number = this.graphics.scale) {
+        this.graphics.draw(center, scale);
     }
 
     tick(deltaTime: milliseconds) {
@@ -120,18 +128,11 @@ class Entity {
     isCollidingWith(bs: Entity[]) {
         let colliding = false;
 
-        const a = this;
-
         for (const b of bs) {
 
-            if (b.id === a.id) continue;
+            if (b.id === this.id) continue;
 
-            if (!(
-                ((a.position.y + a.size.y) < (b.position.y)) || // a.bottomleft.y < b.topleft.y 
-                (a.position.y > (b.position.y + b.size.y)) || // a.topleft.y > b.bottomleft.y
-                ((a.position.x + a.size.x) < b.position.x) || // a.topright.x < b.topleft.x
-                (a.position.x > (b.position.x + b.size.x)) // a.topleft.x > b.topright.x
-            )) {
+            if (this.bounds.isCollidingWith(b.bounds)) {
                 colliding = true;
                 break;
             }
@@ -143,16 +144,10 @@ class Entity {
     getColliding(bs: Entity[]): Entity[] {
         const colliding: Entity[] = [];
 
-        const a = this;
         for (const b of bs) {
-            if (b.id === a.id) continue;
+            if (b.id === this.id) continue;
 
-            if (!(
-                ((a.position.y + a.size.y) < (b.position.y)) ||
-                (a.position.y > (b.position.y + b.size.y)) ||
-                ((a.position.x + a.size.x) < b.position.x) ||
-                (a.position.x > (b.position.x + b.size.x))
-            )) {
+            if (this.bounds.isCollidingWith(b.bounds)) {
                 colliding.push(b);
             }
         }

@@ -11,7 +11,7 @@ class Graphics {
     color?: string;
 
     // Image / Texture
-    imageURL?: string;
+    sprite: HTMLImageElement;
 
     constructor(parent: Entity, type: GraphicsType = GraphicsType.Rectangle, scale: number = 1) {
         this.parent = parent;
@@ -19,26 +19,37 @@ class Graphics {
         this.scale = scale;
 
         this.color = '#ffffff';
+
+        this.sprite = new Image();
+    }
+
+    setSprite(src: string) {
+        console.log(src, this.sprite);
+        this.sprite.src = `${__webpack_public_path__}/${src}`;
     }
 
     draw(center: Vector, scale: number = this.scale) {
 
         const ctx = global.ctx as CanvasRenderingContext2D;
-        
+
+        const halfScale = scale / 2;
+        const halfSizeScale = Vector.multiply(this.parent.size, halfScale)
+        const topLeft = Vector.subtract(center, halfSizeScale);
+
         switch (this.type) {
             case GraphicsType.Rectangle: {
                 ctx.fillStyle = this.color;
 
-                const halfScale = scale / 2;
-                const halfSizeScale = Vector.multiply(this.parent.size, halfScale)
 
-                const topLeft = Vector.subtract(center, halfSizeScale);
-                const bottomRight = Vector.sum(center, halfSizeScale);
+                
 
-                ctx.fillRect(topLeft.x, topLeft.y, bottomRight.x, bottomRight.y);
+                ctx.fillRect(topLeft.x, topLeft.y, this.parent.size.x * scale, this.parent.size.y * scale);
             }
             case GraphicsType.Circle: {
 
+            }
+            case GraphicsType.Image: {
+                ctx.drawImage(this.sprite, topLeft.x, topLeft.y, this.parent.size.x, this.parent.size.y);
             }
         }
 
@@ -53,3 +64,4 @@ enum GraphicsType {
 }
 
 export default Graphics;
+export { GraphicsType }
