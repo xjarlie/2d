@@ -39,7 +39,7 @@ class Player extends Entity {
         const animation = new SpriteAnimation([
             {
                 sprite: mainSprite,
-                duration: 10,
+                duration: 100,
                 delayAfter: 0
             },
             {

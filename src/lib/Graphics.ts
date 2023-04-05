@@ -40,12 +40,12 @@ class Graphics {
 
         } else if (this.type === GraphicsType.Image) {
 
-            // Process animations
+            let current = this.currentSprite;
+
             if (this.animation) {
                 this.animation.step();
+                current = this.animation.currentSprite;
             }
-
-            const current = this.currentSprite;
 
             switch (current.fit) {
                 case "fit": {
@@ -91,18 +91,18 @@ class Sprite {
 
         const offscreen = new OffscreenCanvas(this.imageElement.naturalWidth, this.imageElement.naturalHeight);
         const offCtx = offscreen.getContext("2d");
-        console.log(offCtx);
 
-        for (let i=0; i < 1000; i++) {
+        for (let i=0; i < 10000; i++) {
+            // doesn't ever load fsr
             if (initialised) break;
             if (!this.imageElement.complete) continue;
 
+            
+
             offCtx.drawImage(this.imageElement, 0, 0, this.width, this.height);
-            console.log(this.imageElement)
             this.imageBitmap = offscreen.transferToImageBitmap();
             initialised = true;
         }
-        console.log(this.imageBitmap);
 
     }
 }
@@ -127,26 +127,28 @@ class SpriteAnimation {
 
     animTicks: number;
     totalTicks: number;
+    stepSpeed: number;
 
     startingTicks: number[];
 
     currentFrameIndex: number;
 
-    constructor(frames: AnimationFrame[] = []) {
+    constructor(frames: AnimationFrame[] = [], standardDelay: number = 0) {
         this.frames = frames;
-        this.standardDelay = 0;
+        this.standardDelay = standardDelay;
 
         this.animTicks = 0;
         this.startingTicks = [];
 
         this.totalTicks = 0;
+        this.
 
         for (const i in frames) {
             const o = frames[i];
 
             this.startingTicks[i] = this.totalTicks;
 
-            this.totalTicks += o.duration + o.delayAfter;
+            this.totalTicks += o.duration + o.delayAfter + this.standardDelay;
         }
 
         this.currentFrameIndex = 0;
@@ -162,7 +164,6 @@ class SpriteAnimation {
             if( ticks >= this.startingTicks[i] ) {
                 return i;
             }
-            console.log(i);
         }
         return -1;
     }
@@ -172,6 +173,8 @@ class SpriteAnimation {
 
         this.animTicks++;
         if (this.animTicks > this.totalTicks) this.animTicks = 0;
+
+        console.log(this.animTicks, this.currentSprite.name)
     }
 
     static fromSpriteSheet(sheet: SpriteSheet, metadata: {duration: number; delayAfter: number}[]): SpriteAnimation {
