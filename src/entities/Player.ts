@@ -8,7 +8,7 @@ import { getCollisionsBetween } from "../lib/collisions";
 import { getByGroup } from "../lib/getEntities";
 import Camera from "../lib//Camera";
 import Bullet from "./Bullet";
-import Graphics, { GraphicsType, Sprite } from "../lib/Graphics";
+import Graphics, { GraphicsType, Sprite, SpriteAnimation } from "../lib/Graphics";
 
 class Player extends Entity {
 
@@ -33,8 +33,24 @@ class Player extends Entity {
         this.groups.push(EntityGroup.Player);
 
         this.graphics = new Graphics(this, GraphicsType.Image);
-        this.graphics.sprite = new Sprite("img/itsame.jpg");
-        this.graphics.sprite.fit = "fit";
+        const mainSprite = new Sprite("img/itsame.jpg", "itsame", "fit");
+        const pixelatedMario = new Sprite("img/mariosquare.png", "pixel", "fit");
+
+        const animation = new SpriteAnimation([
+            {
+                sprite: mainSprite,
+                duration: 10,
+                delayAfter: 0
+            },
+            {
+                sprite: pixelatedMario,
+                duration: 10,
+                delayAfter: 0
+            }
+        ]);
+
+        this.graphics.animation = animation;
+        this.graphics.currentSprite = mainSprite;
     }
 
     tick(deltaTime: milliseconds) {

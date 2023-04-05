@@ -12,7 +12,8 @@ class Graphics {
     color?: string;
 
     // Image / Texture
-    sprite?: Sprite;
+    currentSprite: Sprite;
+    animation: SpriteAnimation;
 
     constructor(parent: Entity, type: GraphicsType = GraphicsType.Rectangle, scale: number = 1) {
         this.parent = parent;
@@ -39,16 +40,23 @@ class Graphics {
 
         } else if (this.type === GraphicsType.Image) {
 
-            switch (this.sprite.fit) {
+            // Process animations
+            if (this.animation) {
+                this.animation.step();
+            }
+
+            const current = this.currentSprite;
+
+            switch (current.fit) {
                 case "fit": {
-                    this.sprite.width = this.parent.size.x;
-                    this.sprite.height = this.parent.size.y;
+                    current.width = this.parent.size.x;
+                    current.height = this.parent.size.y;
                 }
             }
 
-            const topLeft = Vector.subtract(center, new Vector(this.sprite.width / 2, this.sprite.height / 2));
+            const topLeft = Vector.subtract(center, new Vector(current.width / 2, current.height / 2));
 
-            ctx.drawImage(this.sprite.image, topLeft.x, topLeft.y, this.sprite.width, this.sprite.height);
+            ctx.drawImage(current.imageElement, topLeft.x, topLeft.y, current.width, current.height);
 
         }
     }
@@ -57,22 +65,44 @@ class Graphics {
 type FitType = "default" | "fit" | "tile";
 
 class Sprite {
+    name: string;
+
     fit: FitType;
     src: string;
 
-    image: HTMLImageElement;
+    imageElement: HTMLImageElement;
+    imageBitmap: ImageBitmap;
     width: number;
     height: number;
 
-    constructor(src: string, fit: FitType = "default") {
+    constructor(src: string, name: string = src, fit: FitType = "default") {
+        this.name = name;
+        
         this.src = `${__webpack_public_path__}/${src}`;
         this.fit = fit;
 
-        this.image = new Image();
-        this.image.src = this.src;
+        this.imageElement = new Image();
+        this.imageElement.src = this.src;
 
-        this.height = this.image.height;
-        this.width = this.image.width;
+        this.height = this.imageElement.height;
+        this.width = this.imageElement.width;
+
+        let initialised: boolean = false;
+
+        const offscreen = new OffscreenCanvas(this.imageElement.naturalWidth, this.imageElement.naturalHeight);
+        const offCtx = offscreen.getContext("2d");
+        console.log(offCtx);
+
+        for (let i=0; i < 1000; i++) {
+            if (initialised) break;
+            if (!this.imageElement.complete) continue;
+
+            offCtx.drawImage(this.imageElement, 0, 0, this.width, this.height);
+            console.log(this.imageElement)
+            this.imageBitmap = offscreen.transferToImageBitmap();
+            initialised = true;
+        }
+        console.log(this.imageBitmap);
 
     }
 }
@@ -81,27 +111,70 @@ class SpriteSheet extends Sprite {
     constructor(src: string) {
         super(src);
 
-
+        // some code to determine img size and separate em out idk anymore
     }
 }
 
 type AnimationFrame = {
     duration: number;
     sprite: Sprite;
-    delayAfter: number
+    delayAfter: number;
 }
 
-class Animation {
+class SpriteAnimation {
     frames: AnimationFrame[];
     standardDelay: number;
+
+    animTicks: number;
+    totalTicks: number;
+
+    startingTicks: number[];
+
+    currentFrameIndex: number;
 
     constructor(frames: AnimationFrame[] = []) {
         this.frames = frames;
         this.standardDelay = 0;
 
+        this.animTicks = 0;
+        this.startingTicks = [];
+
+        this.totalTicks = 0;
+
+        for (const i in frames) {
+            const o = frames[i];
+
+            this.startingTicks[i] = this.totalTicks;
+
+            this.totalTicks += o.duration + o.delayAfter;
+        }
+
+        this.currentFrameIndex = 0;
+
     }
 
-    static fromSpriteSheet(sheet: SpriteSheet, metadata: {duration: number; delayAfter: number}[]): Animation {
+    get currentSprite(): Sprite {
+        return this.frames[this.currentFrameIndex].sprite;
+    } 
+
+    indexFromTicks(ticks: number): number {
+        for( let i = this.frames.length - 1;  i >= 0;  --i ) {
+            if( ticks >= this.startingTicks[i] ) {
+                return i;
+            }
+            console.log(i);
+        }
+        return -1;
+    }
+
+    step() {
+        this.currentFrameIndex = this.indexFromTicks(this.animTicks);
+
+        this.animTicks++;
+        if (this.animTicks > this.totalTicks) this.animTicks = 0;
+    }
+
+    static fromSpriteSheet(sheet: SpriteSheet, metadata: {duration: number; delayAfter: number}[]): SpriteAnimation {
         
         const frameList: AnimationFrame[] = [];
         const sprites: Sprite[] = []; // Get sprites from spritesheet
@@ -114,7 +187,7 @@ class Animation {
             frameList[i] = frame;
         }
 
-        return new Animation(frameList);
+        return new SpriteAnimation(frameList);
     }
 }
 
@@ -126,4 +199,4 @@ enum GraphicsType {
 }
 
 export default Graphics;
-export { GraphicsType, Sprite, SpriteSheet }
+export { GraphicsType, Sprite, SpriteSheet, SpriteAnimation }

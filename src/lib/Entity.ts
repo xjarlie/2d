@@ -119,7 +119,7 @@ class Entity {
         }
     }
 
-    add() {
+    async add() {
         this.id = nextID();
         global.entities.push(this);
     }
