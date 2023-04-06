@@ -35,7 +35,7 @@ class Player extends Entity {
         this.graphics = new Graphics(this, GraphicsType.Rectangle);
 
         function callback(sheet: SpriteSheet) {
-            const piskelAnim = SpriteAnimation.fromSpriteSheet(sheet, 100);
+            const piskelAnim = SpriteAnimation.fromSpriteSheet(sheet, 5);
             this.graphics.type = GraphicsType.Image;
             this.graphics.animation = piskelAnim;
         }
