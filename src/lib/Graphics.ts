@@ -141,7 +141,6 @@ class SpriteAnimation {
         this.startingTicks = [];
 
         this.totalTicks = 0;
-        this.
 
         for (const i in frames) {
             const o = frames[i];
