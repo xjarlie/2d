@@ -19,6 +19,8 @@ class Player extends Entity {
     lastFired: number;
     fireDelay: number;
 
+    animations: SpriteAnimation[];
+
     constructor(posX: number, posY: number) {
         super(posX, posY, 50, 50);
 
@@ -33,13 +35,19 @@ class Player extends Entity {
         this.groups.push(EntityGroup.Player);
 
         this.graphics = new Graphics(this, GraphicsType.Rectangle);
+        this.animations = [];
 
-        function callback(sheet: SpriteSheet) {
-            const piskelAnim = SpriteAnimation.fromSpriteSheet(sheet, 5);
+        function piskelCallback(sheet: SpriteSheet) {
+            this.animations[0] = SpriteAnimation.fromSpriteSheet(sheet, 5);
             this.graphics.type = GraphicsType.Image;
-            this.graphics.animation = piskelAnim;
+            this.graphics.animation = this.animations[0];
         }
-        const piskelSheet = new SpriteSheet("img/piskel-sheet.png", "piskelsheet", new Vector(32, 32), [], callback.bind(this));
+        const piskelSheet = new SpriteSheet("img/piskel-sheet.png", "piskelsheet", new Vector(32, 32), [], piskelCallback.bind(this));
+
+        function pacmanCallback(sheet: SpriteSheet) {
+            this.animations[1] = SpriteAnimation.fromSpriteSheet(sheet, 10);
+        }
+        const pacmanSheet = new SpriteSheet("img/pacman-spritesheet.png", "pacmansheet", new Vector(28.4, 46), [], pacmanCallback.bind(this));
         
 
     }
@@ -85,6 +93,12 @@ class Player extends Entity {
                 
             }
 
+        }
+
+        if (keyPressed("h")) {
+            this.graphics.animation = this.animations[1];
+        } else {
+            this.graphics.animation = this.animations[0];
         }
 
         super.tick(deltaTime);
