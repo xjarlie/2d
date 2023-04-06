@@ -1,8 +1,8 @@
-import Entity from "./Entity";
-import { Vector } from "./Vector";
-import { getById } from "./getEntities";
-import global from "./global";
-import { seconds } from "./types";
+import Entity from "../lib/Entity";
+import { Vector } from "../lib/Vector";
+import { getById } from "../lib/getEntities";
+import global from "../lib/global";
+import { seconds } from "../lib/types";
 
 class Graphics {
     parent: Entity;

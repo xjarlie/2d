@@ -6,9 +6,9 @@ import global from "../lib/global";
 import { ticks } from "../lib/tick";
 import { getCollisionsBetween } from "../lib/collisions";
 import { getByGroup } from "../lib/getEntities";
-import Camera from "../lib//Camera";
+import Camera from "../modules/Camera";
 import Bullet from "./Bullet";
-import Graphics, { GraphicsType, Sprite, SpriteAnimation, SpriteSheet } from "../lib/Graphics";
+import Graphics, { GraphicsType, Sprite, SpriteAnimation, SpriteSheet } from "../modules/Graphics";
 
 class Player extends Entity {
 

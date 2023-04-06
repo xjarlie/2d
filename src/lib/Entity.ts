@@ -6,7 +6,7 @@ import { getByGroup, nextID } from "./getEntities";
 import { Collision, getCollisions, getCollisionsBetween } from "./collisions";
 import Composite from "../Composite";
 import Bounds from "./Bounds";
-import Graphics, { GraphicsType } from "./Graphics";
+import Graphics, { GraphicsType } from "../modules/Graphics";
 
 class Entity {
 

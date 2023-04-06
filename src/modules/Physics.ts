@@ -1,8 +1,8 @@
-import Entity from "./Entity";
-import { Vector } from "./Vector";
-import { Collision, getCollisions } from "./collisions";
-import { getById } from "./getEntities";
-import { CollisionType } from "./types";
+import Entity from "../lib/Entity";
+import { Vector } from "../lib/Vector";
+import { Collision, getCollisions } from "../lib/collisions";
+import { getById } from "../lib/getEntities";
+import { CollisionType } from "../lib/types";
 
 class PhysicsEngine {
 

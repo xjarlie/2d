@@ -6,9 +6,9 @@ import Player from "./entities/Player";
 import { Vector } from "./lib/Vector";
 import { EntityGroup } from "./lib/types";
 import Ground from "./entities/Ground";
-import Camera from "./lib/Camera";
+import Camera from "./modules/Camera";
 import { resetCollisions } from "./lib/collisions";
-import PhysicsEngine from "./lib/PhysicsEngine";
+import PhysicsEngine from "./modules/Physics";
 
 function main() {
 

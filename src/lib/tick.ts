@@ -1,12 +1,12 @@
 import { reset } from "..";
-import Camera from "./Camera";
+import Camera from "../modules/Camera";
 import Entity from "./Entity";
 import { Collision, getAllCollisions, getCollisionsBetween, updateCollisions, resetCollisions, setCollisions } from "./collisions";
 import global from "./global";
 import { keyPressed } from "./keyMap";
 import { milliseconds } from "./types";
 import { Vector } from "./Vector";
-import PhysicsEngine from "./PhysicsEngine";
+import PhysicsEngine from "../modules/Physics";
 
 let ticks: number = 0;
 let paused: boolean = false;

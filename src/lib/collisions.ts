@@ -1,4 +1,4 @@
-import Camera from "./Camera";
+import Camera from "../modules/Camera";
 import Entity from "./Entity";
 import { Vector } from "./Vector";
 import { getById } from "./getEntities";

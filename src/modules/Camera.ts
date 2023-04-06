@@ -1,6 +1,6 @@
-import Entity from "./Entity";
-import global from "./global";
-import { Vector } from "./Vector";
+import Entity from "../lib/Entity";
+import global from "../lib/global";
+import { Vector } from "../lib/Vector";
 
 class Camera {
     position: Vector;
