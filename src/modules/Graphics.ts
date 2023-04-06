@@ -215,6 +215,7 @@ class SpriteAnimation {
         this.currentFrameIndex = this.indexFromTicks(this.animTicks);
         this.animTicks++;
         if (this.animTicks > this.totalTicks) this.animTicks = 0;
+
     }
 
     static fromSpriteSheet(sheet: SpriteSheet, durations: number[] | number): SpriteAnimation {
