@@ -66,10 +66,12 @@ class Player extends Entity {
 
         if (keyPressed("w")) {
 
+            console.log('up pressed');
+
             const accCollisions = getCollisionsBetween(this, getByGroup(EntityGroup.Box, EntityGroup.Ground));
-            if (accCollisions.some(o => o.type = CollisionType.Bottom)) {
-                this.direction = Math.PI * 1.5;
-                this.applyForce(Vector.fromPolar(this.jumpForce, this.direction));
+            console.log(accCollisions, accCollisions.filter(o => o.type === CollisionType.Bottom).length);
+            if (accCollisions.some(o => o.type === CollisionType.Bottom)) {
+                this.applyForce(new Vector(0, -this.jumpForce));
             }
 
         }
@@ -80,6 +82,7 @@ class Player extends Entity {
                 const bullet = new Bullet(this.center.x + this.size.x, this.center.y, Vector.fromPolar(200_000_000_000_000, this.direction));
                 bullet.add();
                 this.lastFired = ticks;
+                
             }
 
         }

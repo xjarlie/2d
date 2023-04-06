@@ -59,10 +59,6 @@ class Graphics {
 
             const startingPt = current.startingPos;
 
-            console.log(current);
-
-
-            //ctx.drawImage(current.imageElement, topLeft.x, topLeft.y, current.width, current.height, startingPt.x, startingPt.y, current.width, current.height);
             if (current.imageElement.complete) {
                 ctx.drawImage(current.imageElement, startingPt.x, startingPt.y, current.finishPos.x - startingPt.x, current.finishPos.y - startingPt.y, topLeft.x, topLeft.y, current.width, current.height)
             }
@@ -108,8 +104,6 @@ class Sprite {
 
         this.startingPos = this.startingPos || new Vector(0, 0);
         this.finishPos = this.finishPos || new Vector(this.width, this.height);
-
-        console.log(this.width, this.height);
     }
 }
 
@@ -159,13 +153,9 @@ class SpriteSheet extends Sprite {
                 sprite.startingPos = new Vector(j * this.spriteSize.x, i * this.spriteSize.y);
                 sprite.finishPos = new Vector(nextJ * this.spriteSize.x, nextI * this.spriteSize.y);
 
-                console.log(name, sprite.startingPos, sprite.finishPos);
-
                 this.sprites.push(sprite);
             }
         }
-
-        console.log(this.sprites);
 
         this.extOnLoad(this);
     }
