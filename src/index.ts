@@ -10,8 +10,6 @@ import Camera from "./modules/Camera";
 import { resetCollisions } from "./lib/collisions";
 import PhysicsEngine from "./modules/Physics";
 
-let handlerNum: number = 0;
-
 function main() {
 
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
@@ -51,9 +49,8 @@ function main() {
 
     const ground = new Ground(150, 400, 1000, 25);
     ground.add();    
-
-    handlerNum = requestAnimationFrame(tick);
-    console.warn(handlerNum);
+    
+    global.handlerNum = requestAnimationFrame(tick);
 
     window.addEventListener("keydown", (key) => {keyListener(key, 'down')});
     window.addEventListener("keyup", (key) => {keyListener(key, 'up')});
@@ -82,8 +79,8 @@ function reset() {
     setTicks(0);
     resetGlobal();
     resetCollisions();
-    console.log(handlerNum);
-    cancelAnimationFrame(handlerNum);
+    console.log(global.handlerNum);
+    cancelAnimationFrame(global.handlerNum);
 
     main();
     unpause();

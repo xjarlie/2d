@@ -22,7 +22,7 @@ let savedCollisions: Collision[] = [];
 function tick(timestamp: DOMHighResTimeStamp) {
 
     if (paused) {
-        requestAnimationFrame(tick);
+        global.handlerNum = requestAnimationFrame(tick);
         return
     }
 
@@ -102,8 +102,8 @@ function tick(timestamp: DOMHighResTimeStamp) {
 
     lastTimestamp = timestamp;
     ticks++;
-    requestAnimationFrame(tick);
-
+    global.handlerNum = requestAnimationFrame(tick);
+    console.log('current', global.handlerNum);
 }
 
 function pause() {
