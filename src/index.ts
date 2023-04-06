@@ -60,10 +60,10 @@ function main() {
 
     // vector testing
 
-    const a = new Vector(-10, -10);
-    const b = new Vector(0, 0);
+    const a = new Vector(0, 0);
+    const b = 2
 
-    console.warn(Vector.subtract(a, b))
+    console.warn(Vector.divide(a, b))
 
 }
 
@@ -87,7 +87,7 @@ function reset() {
 
 window.onload = () => { 
     main();
-    reset();
+    // reset();
 };
 
 export { reset };

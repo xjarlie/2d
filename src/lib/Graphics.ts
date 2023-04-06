@@ -2,6 +2,7 @@ import Entity from "./Entity";
 import { Vector } from "./Vector";
 import { getById } from "./getEntities";
 import global from "./global";
+import { seconds } from "./types";
 
 class Graphics {
     parent: Entity;
@@ -56,8 +57,15 @@ class Graphics {
 
             const topLeft = Vector.subtract(center, new Vector(current.width / 2, current.height / 2));
 
-            ctx.drawImage(current.imageElement, topLeft.x, topLeft.y, current.width, current.height);
+            const startingPt = current.startingPos;
 
+            console.log(current);
+
+
+            //ctx.drawImage(current.imageElement, topLeft.x, topLeft.y, current.width, current.height, startingPt.x, startingPt.y, current.width, current.height);
+            if (current.imageElement.complete) {
+                ctx.drawImage(current.imageElement, startingPt.x, startingPt.y, current.finishPos.x - startingPt.x, current.finishPos.y - startingPt.y, topLeft.x, topLeft.y, current.width, current.height)
+            }
         }
     }
 }
@@ -75,50 +83,97 @@ class Sprite {
     width: number;
     height: number;
 
+    startingPos: Vector;
+    finishPos: Vector;
+
     constructor(src: string, name: string = src, fit: FitType = "default") {
         this.name = name;
-        
+
         this.src = `${__webpack_public_path__}/${src}`;
         this.fit = fit;
 
         this.imageElement = new Image();
         this.imageElement.src = this.src;
 
+        this.height = 0;
+        this.width = 0;
+
+        this.imageElement.onload = () => this.onImageLoad();
+
+    }
+
+    onImageLoad() {
         this.height = this.imageElement.height;
         this.width = this.imageElement.width;
 
-        let initialised: boolean = false;
+        this.startingPos = this.startingPos || new Vector(0, 0);
+        this.finishPos = this.finishPos || new Vector(this.width, this.height);
 
-        const offscreen = new OffscreenCanvas(this.imageElement.naturalWidth, this.imageElement.naturalHeight);
-        const offCtx = offscreen.getContext("2d");
-
-        for (let i=0; i < 10000; i++) {
-            // doesn't ever load fsr
-            if (initialised) break;
-            if (!this.imageElement.complete) continue;
-
-            
-
-            offCtx.drawImage(this.imageElement, 0, 0, this.width, this.height);
-            this.imageBitmap = offscreen.transferToImageBitmap();
-            initialised = true;
-        }
-
+        console.log(this.width, this.height);
     }
 }
 
 class SpriteSheet extends Sprite {
-    constructor(src: string) {
-        super(src);
+
+    spriteSize: Vector;
+    sprites: Sprite[];
+    totalSprites: number;
+
+    rawSrc: string;
+    names: string[];
+    extOnLoad: (sheet: SpriteSheet) => any;
+
+    constructor(src: string, name: string, spriteSize: Vector, names: string[] = [], onLoad: (sheet: SpriteSheet) => any = () => {}) {
+        super(src, name);
+        this.spriteSize = spriteSize;
+
+        this.rawSrc = src;
+        this.names = names;
+
+        this.extOnLoad = onLoad;
 
         // some code to determine img size and separate em out idk anymore
+    }
+
+    getSprite(index: number): Sprite {
+        return this.sprites[index];
+    }
+
+    onImageLoad(): void {
+        super.onImageLoad();
+
+        const numSpritesX: number = this.imageElement.width / this.spriteSize.x;
+        const numSpritesY: number = this.imageElement.height / this.spriteSize.y;
+        this.totalSprites = numSpritesX * numSpritesY;
+
+        this.sprites = [];
+
+        for (let i = 0; i < numSpritesY; i++) {
+            const nextI = i+1;
+            for (let j = 0; j < numSpritesX; j++) {
+                const nextJ = j+1;
+
+                const name: string = this.names[this.sprites.length] || `${this.name}-${this.sprites.length}`;
+
+                const sprite: Sprite = new Sprite(this.rawSrc, name, "fit");
+                sprite.startingPos = new Vector(j * this.spriteSize.x, i * this.spriteSize.y);
+                sprite.finishPos = new Vector(nextJ * this.spriteSize.x, nextI * this.spriteSize.y);
+
+                console.log(name, sprite.startingPos, sprite.finishPos);
+
+                this.sprites.push(sprite);
+            }
+        }
+
+        console.log(this.sprites);
+
+        this.extOnLoad(this);
     }
 }
 
 type AnimationFrame = {
     duration: number;
     sprite: Sprite;
-    delayAfter: number;
 }
 
 class SpriteAnimation {
@@ -127,7 +182,6 @@ class SpriteAnimation {
 
     animTicks: number;
     totalTicks: number;
-    stepSpeed: number;
 
     startingTicks: number[];
 
@@ -147,7 +201,7 @@ class SpriteAnimation {
 
             this.startingTicks[i] = this.totalTicks;
 
-            this.totalTicks += o.duration + o.delayAfter + this.standardDelay;
+            this.totalTicks += o.duration + this.standardDelay;
         }
 
         this.currentFrameIndex = 0;
@@ -156,11 +210,11 @@ class SpriteAnimation {
 
     get currentSprite(): Sprite {
         return this.frames[this.currentFrameIndex].sprite;
-    } 
+    }
 
     indexFromTicks(ticks: number): number {
-        for( let i = this.frames.length - 1;  i >= 0;  --i ) {
-            if( ticks >= this.startingTicks[i] ) {
+        for (let i = this.frames.length - 1; i >= 0; --i) {
+            if (ticks >= this.startingTicks[i]) {
                 return i;
             }
         }
@@ -169,22 +223,19 @@ class SpriteAnimation {
 
     step() {
         this.currentFrameIndex = this.indexFromTicks(this.animTicks);
-
         this.animTicks++;
         if (this.animTicks > this.totalTicks) this.animTicks = 0;
-
-        console.log(this.animTicks, this.currentSprite.name)
     }
 
-    static fromSpriteSheet(sheet: SpriteSheet, metadata: {duration: number; delayAfter: number}[]): SpriteAnimation {
-        
+    static fromSpriteSheet(sheet: SpriteSheet, durations: number[] | number): SpriteAnimation {
+
         const frameList: AnimationFrame[] = [];
-        const sprites: Sprite[] = []; // Get sprites from spritesheet
+        const sprites: Sprite[] = sheet.sprites; // TODO: Get sprites from spritesheet
 
         for (const i in sprites) {
             const frame: AnimationFrame = {
                 sprite: sprites[i],
-                ...metadata[i]
+                duration: typeof durations === 'number' ? durations : durations[i]
             };
             frameList[i] = frame;
         }
