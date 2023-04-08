@@ -2,9 +2,9 @@ import Entity from "../lib/Entity";
 import { Vector } from "../lib/Vector";
 import { Collision, getCollisions } from "../lib/collisions";
 import { getById } from "../lib/getEntities";
-import { CollisionType } from "../lib/types";
+import { CollisionType, PhysicsModule } from "../lib/types";
 
-class PhysicsEngine {
+class DefaultPhysics implements PhysicsModule {
 
     gravity: number;
     airConstant: number;
@@ -115,4 +115,4 @@ class PhysicsEngine {
     }
 }
 
-export default PhysicsEngine;
+export default DefaultPhysics;

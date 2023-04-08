@@ -1,10 +1,8 @@
 import { Vector } from "./Vector";
-import global from "./global";
 import { CollisionType, EntityGroup, milliseconds } from "./types";
 import { ticks } from "./tick";
 import { getByGroup, nextID } from "./getEntities";
 import { Collision, getCollisions, getCollisionsBetween } from "./collisions";
-import Composite from "../Composite";
 import Bounds from "./Bounds";
 import Graphics, { GraphicsType } from "../modules/Graphics";
 
@@ -80,18 +78,8 @@ class Entity {
     }
 
     applyForce(f: Vector) {
-        // this.acceleration = Vector.sum(this.acceleration, Vector.divide(f, this.mass));
         this.force = Vector.sum(this.force, f);
     }
-
-    // draw(position = this.position) {
-
-    //     const ctx = global.ctx as CanvasRenderingContext2D;
-
-    //     ctx.fillStyle = this.color;
-    //     ctx.fillRect(position.x, position.y, this.size.x, this.size.y);
-
-    // }
 
     draw(center: Vector = this.center, scale: number = this.graphics.scale) {
         this.graphics.draw(center, scale);
@@ -117,11 +105,6 @@ class Entity {
 
             this.bounds.updatePosition(this.center);
         }
-    }
-
-    async add() {
-        this.id = nextID();
-        global.entities.push(this);
     }
 
     // Only for internal use

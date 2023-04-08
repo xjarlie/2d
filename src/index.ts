@@ -8,37 +8,41 @@ import { EntityGroup } from "./lib/types";
 import Ground from "./entities/Ground";
 import Camera from "./modules/Camera";
 import { resetCollisions } from "./lib/collisions";
-import PhysicsEngine from "./modules/Physics";
+import DefaultPhysics from "./modules/DefaultPhysics";
+import DefaultEngine from "./modules/DefaultEngine";
+import Engine from "./lib/Engine";
+
+let currentEngine: Engine;
 
 function main() {
 
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
     const ctx = canvas.getContext("2d");
 
-
-    global.ctx = ctx;
-
-    const physics = new PhysicsEngine({
+    const physics = new DefaultPhysics({
         gravity: 9.81 * 200,
         airConstant: 0.9
     });
-    global.physics = physics;
 
     const camera = new Camera(ctx);
-    global.camera = camera;
+
+    currentEngine = new DefaultEngine();
+    currentEngine.camera = camera;
+    currentEngine.physicsModule = physics;
+    currentEngine.entities = [];
 
     const player = new Player(200, 200);
     player.hasGravity = true;
-    player.add();
+    currentEngine.add(player);
 
     const box = new Entity(300, 200, 50, 50);
     box.groups.push(EntityGroup.Box);
     box.static = false;
-    box.add();
+    currentEngine.add(box);
 
     const smallBox = new Entity(400, 200, 30, 30);
     smallBox.groups.push(EntityGroup.Box);
-    smallBox.add();
+    currentEngine.add(smallBox);
 
     // camera.glide(new Vector(300, 300), 60);
 
@@ -48,7 +52,7 @@ function main() {
     // smallBoxes.add();
 
     const ground = new Ground(150, 400, 1000, 25);
-    ground.add();    
+    currentEngine.add(ground);   
     
     global.handlerNum = requestAnimationFrame(tick);
 
@@ -70,11 +74,8 @@ function main() {
 function reset() {
     pause();
 
-    for (const i in global.entities) {
-        delete global.entities[i];
-    }
+    currentEngine.entities = [];
 
-    global.entities = [];
     global.ctx.clearRect(0, 0, global.ctx.canvas.width, global.ctx.canvas.height);
     setTicks(0);
     resetGlobal();
@@ -92,4 +93,4 @@ window.onload = () => {
     // reset();
 };
 
-export { reset };
+export { reset, currentEngine as engine };

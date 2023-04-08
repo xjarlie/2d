@@ -1,12 +1,12 @@
-import { reset } from "..";
+import { engine, reset } from "..";
 import Camera from "../modules/Camera";
 import Entity from "./Entity";
-import { Collision, getAllCollisions, getCollisionsBetween, updateCollisions, resetCollisions, setCollisions } from "./collisions";
+import { Collision, getAllCollisions, updateCollisions } from "./collisions";
 import global from "./global";
 import { keyPressed } from "./keyMap";
 import { milliseconds } from "./types";
 import { Vector } from "./Vector";
-import PhysicsEngine from "../modules/Physics";
+import DefaultPhysics from "../modules/DefaultPhysics";
 
 let ticks: number = 0;
 let paused: boolean = false;
@@ -31,7 +31,7 @@ function tick(timestamp: DOMHighResTimeStamp) {
 
     global.tps = 1 / (deltaTime / 1000);
 
-    const camera: Camera = global.camera;
+    const camera = engine.camera as Camera;
 
     //console.info('TPS: ', global.tps);
 
@@ -58,8 +58,8 @@ function tick(timestamp: DOMHighResTimeStamp) {
         }
     }
 
-    const entities: Entity[] = [...global.entities];
-    const physics: PhysicsEngine = global.physics;
+    const entities: Entity[] = [...engine.entities];
+    const physics = engine.physicsModule as DefaultPhysics;
 
     const onScreen: number[] = [];
 
@@ -87,7 +87,7 @@ function tick(timestamp: DOMHighResTimeStamp) {
     physics.handleCollisions(getAllCollisions());
 
     camera.tick(); 
-    global.ctx.clearRect(0, 0, global.ctx.canvas.width, global.ctx.canvas.height);
+    engine.camera.ctx.clearRect(0, 0, engine.camera.ctx.canvas.width, engine.camera.ctx.canvas.height);
     for (const o of entities) {
         o.force = new Vector();
         o.acceleration = new Vector();

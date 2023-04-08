@@ -1,8 +1,6 @@
 import Entity from "../lib/Entity";
 import { Vector } from "../lib/Vector";
-import { getById } from "../lib/getEntities";
-import global from "../lib/global";
-import { seconds } from "../lib/types";
+import { engine } from "../index";
 
 class Graphics {
     parent: Entity;
@@ -27,7 +25,7 @@ class Graphics {
 
     draw(center: Vector, scale: number = this.scale) {
 
-        const ctx = global.ctx as CanvasRenderingContext2D;
+        const ctx = engine.camera.ctx as CanvasRenderingContext2D;
 
         if (this.type === GraphicsType.Rectangle) {
 

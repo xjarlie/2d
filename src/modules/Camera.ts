@@ -1,8 +1,8 @@
 import Entity from "../lib/Entity";
-import global from "../lib/global";
+import { CameraModule } from "../lib/types";
 import { Vector } from "../lib/Vector";
 
-class Camera {
+class Camera implements CameraModule {
     position: Vector;
     ctx: CanvasRenderingContext2D;
 

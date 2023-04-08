@@ -2,13 +2,13 @@ import Entity from "../lib/Entity";
 import { keyPressed } from "../lib/keyMap";
 import { CollisionType, EntityGroup, milliseconds } from "../lib/types";
 import { Vector } from "../lib/Vector";
-import global from "../lib/global";
 import { ticks } from "../lib/tick";
 import { getCollisionsBetween } from "../lib/collisions";
 import { getByGroup } from "../lib/getEntities";
 import Camera from "../modules/Camera";
 import Bullet from "./Bullet";
 import Graphics, { GraphicsType, Sprite, SpriteAnimation, SpriteSheet } from "../modules/Graphics";
+import { engine } from "..";
 
 class Player extends Entity {
 
@@ -53,7 +53,7 @@ class Player extends Entity {
     }
 
     tick(deltaTime: milliseconds) {
-        const camera: Camera = global.camera;
+        const camera = engine.camera as Camera;
         // camera.setCenter(this.position, true, true);
         camera.glide(this.center, 20, 40, true, true);
 

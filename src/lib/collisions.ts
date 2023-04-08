@@ -1,8 +1,8 @@
+import { engine } from "..";
 import Camera from "../modules/Camera";
 import Entity from "./Entity";
 import { Vector } from "./Vector";
 import { getById } from "./getEntities";
-import global from "./global";
 import { CollisionType, EntityGroup } from "./types";
 
 let collisions: Collision[] = [];
@@ -13,7 +13,7 @@ function updateCollisions() {
 
     collisions = [];
 
-    const entities: Entity[] = global.entities;
+    const entities: Entity[] = engine.entities;
 
     // loop through all entities, and check for box collisions
     for (const current of entities) {
