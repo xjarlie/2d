@@ -76,7 +76,7 @@ function reset() {
 
     currentEngine.entities = [];
 
-    global.ctx.clearRect(0, 0, global.ctx.canvas.width, global.ctx.canvas.height);
+    currentEngine.camera.ctx.clearRect(0, 0, currentEngine.camera.ctx.canvas.width, currentEngine.camera.ctx.canvas.height);
     setTicks(0);
     resetGlobal();
     resetCollisions();

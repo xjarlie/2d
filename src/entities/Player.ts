@@ -88,7 +88,7 @@ class Player extends Entity {
 
             if (ticks > this.lastFired + this.fireDelay) {
                 const bullet = new Bullet(this.center.x + this.size.x, this.center.y, Vector.fromPolar(200_000_000_000_000, this.direction));
-                bullet.add();
+                engine.add(bullet);
                 this.lastFired = ticks;
                 
             }
