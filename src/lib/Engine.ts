@@ -27,6 +27,12 @@ class Engine {
         item.id = nextID();
         this.entities.push(item);
     }
+
+    start() {
+        requestAnimationFrame(this.tick);
+    }
+
+    tick: (deltaTime: DOMHighResTimeStamp) => void
 }
 
 export default Engine;

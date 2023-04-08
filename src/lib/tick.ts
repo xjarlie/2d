@@ -103,7 +103,6 @@ function tick(timestamp: DOMHighResTimeStamp) {
     lastTimestamp = timestamp;
     ticks++;
     global.handlerNum = requestAnimationFrame(tick);
-    console.log('current', global.handlerNum);
 }
 
 function pause() {
