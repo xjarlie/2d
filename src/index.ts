@@ -72,19 +72,20 @@ function main() {
 }
 
 function reset() {
-    pause();
+    // pause();
 
-    currentEngine.entities = [];
+    // currentEngine.entities = [];
 
-    currentEngine.camera.ctx.clearRect(0, 0, currentEngine.camera.ctx.canvas.width, currentEngine.camera.ctx.canvas.height);
-    setTicks(0);
-    resetGlobal();
-    resetCollisions();
-    console.log(global.handlerNum);
-    cancelAnimationFrame(global.handlerNum);
+    // currentEngine.camera.ctx.clearRect(0, 0, currentEngine.camera.ctx.canvas.width, currentEngine.camera.ctx.canvas.height);
+    // setTicks(0);
+    // resetGlobal();
+    // resetCollisions();
+    // console.log(global.handlerNum);
+    // cancelAnimationFrame(global.handlerNum);
 
-    main();
-    unpause();
+    // main();
+    // unpause();
+    window.location.href = window.location.href;
 }
 
 
